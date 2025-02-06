@@ -324,35 +324,84 @@ class InlineCartManager {
       }
     }
   
-   
-  
-    showInitializationError() {
-      const modal = document.createElement('div');
-      modal.style.position = 'fixed';
-      modal.style.top = '0';
-      modal.style.left = '0';
-      modal.style.width = '100%';
-      modal.style.height = '100%';
-      modal.style.backgroundColor = 'rgba(0,0,0,0.7)';
-      modal.style.display = 'flex';
-      modal.style.justifyContent = 'center';
-      modal.style.alignItems = 'center';
-      modal.style.zIndex = '1000';
-  
-      const errorContent = document.createElement('div');
-      errorContent.style.backgroundColor = 'white';
-      errorContent.style.padding = '2rem';
-      errorContent.style.borderRadius = '10px';
-      errorContent.innerHTML = `
-        <h2>Erro de Inicialização</h2>
-        <p>Ocorreu um erro ao carregar o sistema de pedidos.</p>
-        <button onclick="window.location.reload()">Recarregar Página</button>
-      `;
-  
-      modal.appendChild(errorContent);
-      document.body.appendChild(modal);
+    generateWhatsAppMessage() {
+      try {
+        if (this.cart.length === 0) {
+          throw new Error('Carrinho vazio');
+        }
+
+        // Show customer details modal
+        const customerDetailsModal = document.getElementById('customer-details-modal');
+        const closeModal = customerDetailsModal.querySelector('.close-modal');
+        customerDetailsModal.style.display = 'block';
+
+        // Close modal when clicking the close button
+        const closeCustomerDetailsModal = () => {
+          customerDetailsModal.style.display = 'none';
+        };
+
+        closeModal.addEventListener('click', closeCustomerDetailsModal);
+
+        // Close modal when clicking outside the modal content
+        customerDetailsModal.addEventListener('click', (e) => {
+          if (e.target === customerDetailsModal) {
+            closeCustomerDetailsModal();
+          }
+        });
+
+        // Handle form submission
+        const customerForm = document.getElementById('customer-details-form');
+        customerForm.onsubmit = (e) => {
+          e.preventDefault();
+
+          const customerName = document.getElementById('customer-name').value;
+          const customerPhone = document.getElementById('customer-phone').value;
+          const customerAddress = document.getElementById('customer-address').value;
+
+          let message = "*Pedido do Dogão do Canela Fina*\n\n";
+          message += `*Nome:* ${customerName}\n`;
+          message += `*Telefone:* ${customerPhone}\n`;
+          message += `*Endereço:* ${customerAddress}\n\n`;
+          message += "*Itens do Pedido:*\n";
+
+          let total = 0;
+          let itemCount = {};
+
+          this.cart.forEach((item) => {
+            const priceValue = parseFloat(item.price.replace('R$ ', '').replace(',', '.'));
+            
+            itemCount[item.name] = (itemCount[item.name] || 0) + 1;
+            
+            total += priceValue;
+          });
+
+          Object.entries(itemCount).forEach(([name, count]) => {
+            message += `${count}x ${name}\n`;
+          });
+
+          // Adicionar informação sobre taxa de entrega
+          message += "\n*Observação:* Taxa de entrega será calculada conforme endereço.\n";
+          message += `*Total:* R$ ${total.toFixed(2).replace('.', ',')}`;
+
+          const encodedMessage = encodeURIComponent(message);
+          const phoneNumber = '5571996447078'; 
+          const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+          
+          window.open(whatsappUrl, '_blank');
+
+          // Reset and close modals
+          this.cart = [];
+          this.updateCartDisplay();
+          document.getElementById('cart-modal').style.display = 'none';
+          customerDetailsModal.style.display = 'none';
+          customerForm.reset();
+        };
+      } catch (error) {
+        console.error('Erro no checkout:', error);
+        alert(error.message || 'Não foi possível finalizar o pedido.');
+      }
     }
-  
+
     initializeAddToCartButtons() {
       const addToCartButtons = document.querySelectorAll('.add-to-cart');
       addToCartButtons.forEach(button => {
@@ -364,7 +413,7 @@ class InlineCartManager {
         });
       });
     }
-  
+
     addToCart(item) {
       try {
         if (!item.name || !item.price) {
@@ -386,7 +435,7 @@ class InlineCartManager {
         alert('Não foi possível adicionar o item ao carrinho. Tente novamente.');
       }
     }
-  
+
     clearCart() {
       this.cart = [];
       this.updateCartDisplay();
@@ -395,13 +444,13 @@ class InlineCartManager {
       // Update cart count
       document.getElementById('cart-count').textContent = '0';
     }
-  
+
     removeFromCart(index) {
       this.cart.splice(index, 1);
       this.updateCartDisplay();
       this.inlineCartManager.updateCart(this.cart);
     }
-  
+
     updateCartDisplay() {
       const cartCount = document.getElementById('cart-count');
       const cartItems = document.getElementById('cart-items');
@@ -458,7 +507,7 @@ class InlineCartManager {
         });
       });
     }
-  
+
     setupScrollHandlers() {
       document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         anchor.addEventListener('click', function (e) {
@@ -484,7 +533,7 @@ class InlineCartManager {
         });
       });
     }
-  
+
     setupFormHandler() {
       const contactForm = document.querySelector('.contact-form');
       contactForm.addEventListener('submit', function(e) {
@@ -493,7 +542,7 @@ class InlineCartManager {
         this.reset();
       });
     }
-  
+
     setupFloatAnimation() {
       const floatItems = document.querySelectorAll('.menu-item, .drink-item');
       floatItems.forEach(item => {
@@ -506,52 +555,7 @@ class InlineCartManager {
         });
       });
     }
-  
-    generateWhatsAppMessage() {
-      try {
-        if (this.cart.length === 0) {
-          throw new Error('Carrinho vazio');
-        }
-  
-        let message = "*Pedido do Dogão do Canela Fina*\n\n";
-        message += "*Itens do Pedido:*\n";
-  
-        let total = 0;
-        let itemCount = {};
-  
-        this.cart.forEach((item, index) => {
-          try {
-            const priceValue = parseFloat(item.price.replace('R$ ', '').replace(',', '.'));
-            
-            itemCount[item.name] = (itemCount[item.name] || 0) + 1;
-            
-            total += priceValue;
-          } catch (error) {
-            console.error(`Erro ao processar item ${index}:`, error);
-          }
-        });
-  
-        Object.entries(itemCount).forEach(([name, count]) => {
-          message += `${count}x ${name}\n`;
-        });
-  
-        message += `\n *Total:* R$ ${total.toFixed(2).replace('.', ',')}`;
-  
-        const encodedMessage = encodeURIComponent(message);
-        const phoneNumber = '5571996447078'; 
-        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-        
-        window.open(whatsappUrl, '_blank');
-  
-        this.cart = [];
-        this.updateCartDisplay();
-        document.getElementById('cart-modal').style.display = 'none';
-      } catch (error) {
-        console.error('Erro no checkout:', error);
-        alert(error.message || 'Não foi possível finalizar o pedido.');
-      }
-    }
-  
+
     setupCartModal() {
       const cartLink = document.getElementById('cart-link');
       const cartModal = document.getElementById('cart-modal');
@@ -576,6 +580,33 @@ class InlineCartManager {
           cartModal.style.display = 'none';
         }
       });
+    }
+
+    showInitializationError() {
+      const modal = document.createElement('div');
+      modal.style.position = 'fixed';
+      modal.style.top = '0';
+      modal.style.left = '0';
+      modal.style.width = '100%';
+      modal.style.height = '100%';
+      modal.style.backgroundColor = 'rgba(0,0,0,0.7)';
+      modal.style.display = 'flex';
+      modal.style.justifyContent = 'center';
+      modal.style.alignItems = 'center';
+      modal.style.zIndex = '1000';
+  
+      const errorContent = document.createElement('div');
+      errorContent.style.backgroundColor = 'white';
+      errorContent.style.padding = '2rem';
+      errorContent.style.borderRadius = '10px';
+      errorContent.innerHTML = `
+        <h2>Erro de Inicialização</h2>
+        <p>Ocorreu um erro ao carregar o sistema de pedidos.</p>
+        <button onclick="window.location.reload()">Recarregar Página</button>
+      `;
+  
+      modal.appendChild(errorContent);
+      document.body.appendChild(modal);
     }
   }
   
