@@ -1,0 +1,179 @@
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dogão do Canela Fina - Melhor HotDog da Cidade!</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <meta name="description" content="O melhor dogão de Lauro de Freitas. Venha experimentar o Dogão do Canela Fina!">
+  <style>
+    .item-icon svg {
+      width: 100%;
+      height: 100%;
+      fill: var(--dark);
+    }
+  </style>
+</head>
+<body>
+  <!-- Inline Cart Dropdown -->
+  <div id="inline-cart" class="inline-cart">
+    <div class="inline-cart-header">
+      <h3>Seu Carrinho</h3>
+      <span id="inline-cart-count">0 itens</span>
+    </div>
+    <div id="inline-cart-items" class="inline-cart-items">
+      <!-- Cart items will be dynamically added here -->
+    </div>
+    <div class="inline-cart-summary">
+      <div class="inline-cart-total">
+        <span>Total:</span>
+        <span id="inline-cart-total">R$ 0,00</span>
+      </div>
+      <div class="inline-cart-actions">
+        <button id="inline-cart-clear">Limpar Carrinho</button>
+        <button id="inline-cart-checkout">Finalizar Pedido</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="cart-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <h2>Seu Carrinho</h2>
+      <div id="cart-items"></div>
+      <div class="cart-summary">
+        <p>Total: <span id="cart-total">R$ 0,00</span></p>
+        <button id="checkout-btn">Finalizar Pedido</button>
+      </div>
+    </div>
+  </div>
+
+  <header class="header">
+    <div class="header-container">
+      <h1>Dogão do Canela Fina</h1>
+      <div class="hamburger-menu">
+        <div class="hamburger-line"></div>
+        <div class="hamburger-line"></div>
+        <div class="hamburger-line"></div>
+      </div>
+      <nav>
+        <a href="#menu"><i class="fas fa-utensils"></i> Cardápio</a>
+        <a href="#promocoes"><i class="fas fa-tag"></i> Promoções</a>
+        <a href="#contato"><i class="fas fa-phone"></i> Contato</a>
+        <a href="#" id="cart-link"><i class="fas fa-shopping-cart"></i> Carrinho <span id="cart-count">0</span></a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <div class="hero-content">
+      <h2>O Melhor Cachorro-Quente da Região!</h2>
+      <p class="hero-subtitle">Sabor e qualidade que fazem a diferença</p>
+      <div class="hero-dog"><img src="2bf6d81d-9585-417d-96bc-3173cf02a0d9.jpeg" alt=""></div>
+      <a href="#menu" class="cta-button">Ver Cardápio</a>
+    </div>
+  </section>
+
+  <section id="promocoes" class="promo-section">
+    <h2>Promoções Especiais</h2>
+    <div class="promo-grid" id="promo-grid">
+      <!-- Combos will be dynamically populated here -->
+    </div>
+  </section>
+
+  <section id="menu" class="menu-section">
+    <h2>Nosso Cardápio</h2>
+    <div class="menu-grid">
+      <div class="menu-item" aria-label="Hot-Dog Clássico">
+        <div class="item-icon hotdog" role="img" aria-label="Ícone de Hot-Dog">
+         <img src="image_fx_.jpg" alt="">
+        </div>
+        <h3>Hot-Dog Clássico</h3>
+        <p>Pão, salsicha, crisp, molho especial, molho vermelho, molho fumaça, queijo ralado</p>
+        <span class="price">R$ 4,90</span>
+        <button class="add-to-cart" aria-label="Adicionar Hot-Dog Clássico ao carrinho">Adicionar</button>
+      </div>
+      <div class="menu-item" aria-label="Dogão Especial">
+        <div class="item-icon dogao" role="img" aria-label="Ícone de Dogão">
+            <img src="image_fx_ (9).jpg" alt="">
+        </div>
+        <h3>Dogão Especial</h3>
+        <p>Pão, 2 salsichas, crisp, molho especial, molho vermelho, molho fumaça, queijo ralado</p>
+        <span class="price">R$ 11,90</span>
+        <button class="add-to-cart" aria-label="Adicionar Dogão Especial ao carrinho">Adicionar</button>
+      </div>
+      <div class="menu-item" aria-label="Batata Suprema">
+        <div class="item-icon fries" role="img" aria-label="Ícone de Batata">
+            <img src="batata-frita.jpg" alt="">
+        </div>
+        <h3>Batata Suprema</h3>
+        <p>Batata frita crocante</p>
+        <span class="price">R$ 8,90</span>
+        <button class="add-to-cart" aria-label="Adicionar Batata Suprema ao carrinho">Adicionar</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="drinks-section">
+    <h2>Bebidas</h2>
+    <div class="drinks-grid">
+      <div class="drink-category">
+        <h3>Refrigerantes</h3>
+        <div class="drink-list">
+          <div class="drink-item">
+            <div class="drink-icon soda" role="img" aria-label="Ícone de Refrigerante">
+                <img src="coca lata.webp" alt="">
+            </div>
+            <span>Coca Cola Lata</span>
+            <span class="price">R$ 7,90</span>
+            <button class="add-to-cart" aria-label="Adicionar Coca-Cola 600ml ao carrinho">Adicionar</button>
+          </div>
+        </div>
+      </div>
+      <div class="drink-category">
+        <h3>Refrigerantes</h3>
+        <div class="drink-list">
+          <div class="drink-item">
+            <div class="drink-icon beer" role="img" aria-label="Ícone de Refrigerante">
+                <img src="coca cola zero.webp" alt="">
+            </div>
+            <span>Coca Cola Lata Zero</span>
+            <span class="price">R$ 7,90</span>
+            <button class="add-to-cart" aria-label="Adicionar Heineken Long Neck ao carrinho">Adicionar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <footer class="footer">
+    <div class="footer-content">
+      <div class="footer-column">
+        <h4>Endereço</h4>
+        <p>Caminho 32, 14<br>Vida Nova - Lauro de Freitas/BA</p>
+      </div>
+      <div class="footer-column">
+        <h4>Horário</h4>
+        <p>Sex-Sáb-Dom: 17h-00h</p>
+      </div>
+      <div class="footer-column">
+        <h4>Quer fazer seu pedido?</h4>
+        <div class="social-icons">
+          <a target="_blank" href="http://wa.me/5571996447078" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+          <!-- <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook"></i></a> -->
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 Dogão do Canela Fina. Todos os direitos reservados.</p>
+    </div>
+  </footer>
+
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
+
+  <script src="scripts.js"></script>
+</body>
+</html>
