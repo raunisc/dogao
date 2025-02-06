@@ -154,12 +154,16 @@ nav a:hover {
     justify-items: start; /* Alinha itens à esquerda */
 }
 
-.drinks-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 2rem;
-    justify-items: start; /* This ensures items align to the left */
-}
+  .drinks-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .drink-item {
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+  }
 
 .drink-category {
   display: contents; 
