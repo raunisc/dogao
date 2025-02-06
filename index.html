@@ -13,6 +13,47 @@
       height: 100%;
       fill: var(--dark);
     }
+    /* Hide hero section */
+    .hero {
+      display: none;
+    }
+    
+    /* Green price color */
+    .price {
+      color: green;
+      font-weight: bold;
+    }
+    #customer-details-modal {
+      display: none;
+      position: fixed;
+      z-index: 1100;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.5);
+    }
+    .customer-details-content {
+      background-color: white;
+      margin: 10% auto;
+      padding: 2rem;
+      border-radius: 10px;
+      width: 80%;
+      max-width: 500px;
+    }
+    .customer-details-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .customer-details-form input,
+    .customer-details-form textarea {
+      width: 100%;
+      padding: 0.5rem;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
   </style>
 </head>
 <body>
@@ -112,6 +153,15 @@
         <span class="price">R$ 8,90</span>
         <button class="add-to-cart" aria-label="Adicionar Batata Suprema ao carrinho">Adicionar</button>
       </div>
+      <div class="menu-item" aria-label="Dogão de Carne">
+        <div class="item-icon dogao" role="img" aria-label="Ícone de Dogão de Carne">
+            <img src="image_fx_ (9).jpg" alt="">
+        </div>
+        <h3>Dogão de Carne</h3>
+        <p>Pão, salsicha de carne, crisp, molho especial, molho vermelho, molho fumaça, queijo ralado</p>
+        <span class="price">R$ 16,90</span>
+        <button class="add-to-cart" aria-label="Adicionar Dogão de Carne ao carrinho">Adicionar</button>
+      </div>
     </div>
   </section>
 
@@ -127,26 +177,41 @@
             </div>
             <span>Coca Cola Lata</span>
             <span class="price">R$ 7,90</span>
-            <button class="add-to-cart" aria-label="Adicionar Coca-Cola 600ml ao carrinho">Adicionar</button>
+            <button class="add-to-cart" aria-label="Adicionar Coca-Cola Lata ao carrinho">Adicionar</button>
           </div>
-        </div>
-      </div>
-      <div class="drink-category">
-        <h3>Refrigerantes</h3>
-        <div class="drink-list">
           <div class="drink-item">
-            <div class="drink-icon beer" role="img" aria-label="Ícone de Refrigerante">
+            <div class="drink-icon soda" role="img" aria-label="Ícone de Refrigerante Zero">
                 <img src="coca cola zero.webp" alt="">
             </div>
             <span>Coca Cola Lata Zero</span>
             <span class="price">R$ 7,90</span>
-            <button class="add-to-cart" aria-label="Adicionar Heineken Long Neck ao carrinho">Adicionar</button>
+            <button class="add-to-cart" aria-label="Adicionar Coca-Cola Zero ao carrinho">Adicionar</button>
           </div>
+        </div>
+      </div>
+      <div class="drink-category" style="display: none;">
+        <h3>Cerveja</h3>
+        <div class="drink-list">
+          <!-- Beer items will be added here later -->
         </div>
       </div>
     </div>
   </section>
 
+  <!-- Customer Details Modal -->
+  <div id="customer-details-modal" class="modal">
+    <div class="customer-details-content">
+      <span class="close-modal">&times;</span>
+      <h2>Informações para Entrega</h2>
+      <form id="customer-details-form" class="customer-details-form">
+        <input type="text" id="customer-name" placeholder="Nome Completo" required>
+        <input type="tel" id="customer-phone" placeholder="Telefone (WhatsApp)" required>
+        <textarea id="customer-address" placeholder="Endereço Completo para Entrega" required></textarea>
+        <p><strong>Nota:</strong> A taxa de entrega varia de acordo com a localização.</p>
+        <button type="submit">Finalizar Pedido</button>
+      </form>
+    </div>
+  </div>
 
   <footer class="footer">
     <div class="footer-content">
@@ -174,6 +239,6 @@
 
   <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script>
 
-  <script src="scripts.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
