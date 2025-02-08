@@ -12,50 +12,66 @@ class InlineCartManager {
   }
 
   setupEventListeners() {
-    this.clearCartButton.addEventListener('click', () => {
+    this.clearCartButton?.addEventListener('click', () => {
       this.orderManager.clearCart();
     });
 
-    this.checkoutButton.addEventListener('click', () => {
+    this.checkoutButton?.addEventListener('click', () => {
       this.orderManager.generateWhatsAppMessage();
     });
   }
 
   updateCart(cart) {
+    if (!this.inlineCartItems) {
+      console.error('Inline cart items element not found');
+      return;
+    }
+
     this.inlineCartItems.innerHTML = '';
     let total = 0;
 
-    cart.forEach((item, index) => {
-      const priceValue = parseFloat(item.price.replace('R$ ', '').replace(',', '.'));
-      total += priceValue;
+    try {
+      cart.forEach((item, index) => {
+        const priceValue = this.parsePrice(item.price);
+        total += priceValue;
 
-      const cartItemEl = document.createElement('div');
-      cartItemEl.classList.add('inline-cart-item');
-      cartItemEl.innerHTML = `
-        <span>${item.name}</span>
-        <div class="inline-cart-item-actions">
-          <span>${item.price}</span>
-          <button class="remove-inline-cart-item" data-index="${index}">
-            <i class="fas fa-trash"></i>
-          </button>
-        </div>
-      `;
+        const cartItemEl = document.createElement('div');
+        cartItemEl.classList.add('inline-cart-item');
+        cartItemEl.innerHTML = `
+          <span>${item.name}</span>
+          <div class="inline-cart-item-actions">
+            <span>${item.price}</span>
+            <button class="remove-inline-cart-item" data-index="${index}">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+        `;
 
-      const removeButton = cartItemEl.querySelector('.remove-inline-cart-item');
-      removeButton.addEventListener('click', () => {
-        this.orderManager.removeFromCart(index);
+        const removeButton = cartItemEl.querySelector('.remove-inline-cart-item');
+        removeButton?.addEventListener('click', () => {
+          this.orderManager.removeFromCart(index);
+        });
+
+        this.inlineCartItems.appendChild(cartItemEl);
       });
 
-      this.inlineCartItems.appendChild(cartItemEl);
-    });
+      if (this.inlineCartCount) this.inlineCartCount.textContent = `${cart.length} itens`;
+      if (this.inlineCartTotal) this.inlineCartTotal.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
 
-    this.inlineCartCount.textContent = `${cart.length} itens`;
-    this.inlineCartTotal.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
+      if (this.inlineCart) {
+        this.inlineCart.classList.toggle('active', cart.length > 0);
+      }
+    } catch (error) {
+      console.error('Error updating inline cart:', error);
+    }
+  }
 
-    if (cart.length > 0) {
-      this.inlineCart.classList.add('active');
-    } else {
-      this.inlineCart.classList.remove('active');
+  parsePrice(priceString) {
+    try {
+      return parseFloat(priceString.replace('R$ ', '').replace(',', '.')) || 0;
+    } catch (error) {
+      console.error('Invalid price format:', priceString);
+      return 0;
     }
   }
 }
@@ -73,7 +89,7 @@ class PromoManager {
           { item: 'Coca-Cola', price: 8.00 }
         ],
         comboPrice: 29.90,
-        availableDays: [1], // Monday
+        availableDays: [1], 
         items: ['Hot-Dog Clássico', 'Batata Suprema', 'Coca-Cola 600ml']
       },
       {
@@ -86,7 +102,7 @@ class PromoManager {
           { item: 'Heineken Long Neck', price: 10.00 }
         ],
         comboPrice: 39.90,
-        availableDays: [2], // Tuesday
+        availableDays: [2], 
         items: ['Dogão Especial', 'Batata Suprema', 'Heineken Long Neck']
       },
       {
@@ -99,7 +115,7 @@ class PromoManager {
           { item: '2x Coca-Cola 600ml', price: 2 * 8.00 }
         ],
         comboPrice: 49.90,
-        availableDays: [3], // Wednesday
+        availableDays: [3], 
         items: ['2x Hot-Dog Clássico', '2x Batata Suprema', '2x Coca-Cola 600ml']
       },
       {
@@ -112,7 +128,7 @@ class PromoManager {
           { item: 'Batata Suprema', price: 18.90 }
         ],
         comboPrice: 44.90,
-        availableDays: [4], // Thursday
+        availableDays: [4], 
         items: ['Hot-Dog Especial', 'Heineken Long Neck', 'Batata Suprema']
       },
       {
@@ -125,7 +141,7 @@ class PromoManager {
           { item: 'Coca-Cola 600ml', price: 8.00 }
         ],
         comboPrice: 34.90,
-        availableDays: [5, 6], // Friday and Saturday
+        availableDays: [5, 6], 
         items: ['Hot-Dog Especial', 'Batata Suprema', 'Coca-Cola 600ml']
       },
       {
@@ -138,7 +154,7 @@ class PromoManager {
           { item: '2x Coca-Cola 600ml', price: 2 * 8.00 }
         ],
         comboPrice: 59.90,
-        availableDays: [0], // Sunday
+        availableDays: [0], 
         items: ['3x Hot-Dog Clássico', '2x Batata Suprema', '2x Coca-Cola 600ml']
       }
     ];
@@ -157,8 +173,8 @@ class PromoManager {
 
   renderCombos() {
     const promoGrid = document.getElementById('promo-grid');
-    promoGrid.innerHTML = ''; // Clear existing combos
-
+    promoGrid.innerHTML = ''; 
+    
     const currentDate = this.getCurrentDate();
     
     this.combos.forEach(combo => {
@@ -172,7 +188,6 @@ class PromoManager {
           `<span class="original-price">${item.item}: R$ ${item.price.toFixed(2)}</span>`
         ).join('');
         
-        // Calculate discount percentage
         const discountPercentage = ((savings / parseFloat(originalTotal)) * 100).toFixed(0);
         
         comboCard.innerHTML = `
@@ -277,7 +292,7 @@ class PromoManager {
     const providedTime = date.getTime();
     
     const timeDiff = Math.abs(systemTime - providedTime);
-    const MAX_TIME_DEVIATION = 60000; // 1 minute allowance
+    const MAX_TIME_DEVIATION = 60000; 
     
     return (
       timeDiff > MAX_TIME_DEVIATION || 
@@ -289,15 +304,14 @@ class PromoManager {
   isComboAvailable(combo, currentDate) {
     try {
       if (!combo || !currentDate) {
+        console.warn('Invalid combo or date');
         return false;
       }
 
       const currentDay = currentDate.getDay();
-      const isAvailable = combo.availableDays.includes(currentDay);
-
-      return isAvailable;
+      return combo.availableDays.includes(currentDay);
     } catch (error) {
-      console.error('Erro ao verificar disponibilidade do combo:', error);
+      console.error('Error checking combo availability:', error);
       return false;
     }
   }
@@ -305,100 +319,20 @@ class PromoManager {
 
 class OrderManager {
   constructor() {
-    this.initializeWithSafety();
-    this.inlineCartManager = new InlineCartManager(this);
-  }
-
-  initializeWithSafety() {
     try {
       this.cart = [];
       this.initializeAddToCartButtons();
       this.setupScrollHandlers();
       this.setupFloatAnimation();
       this.setupCartModal();
+      this.setupCustomizationHandlers();
+      
       window.orderManager = this;
+      this.inlineCartManager = new InlineCartManager(this);
       this.promoManager = new PromoManager();
     } catch (error) {
-      console.error('Falha na inicialização:', error);
+      console.error('Initialization error:', error);
       this.showInitializationError();
-    }
-  }
-
-  generateWhatsAppMessage() {
-    try {
-      if (this.cart.length === 0) {
-        throw new Error('Carrinho vazio');
-      }
-
-      // Show customer details modal
-      const customerDetailsModal = document.getElementById('customer-details-modal');
-      const closeModal = customerDetailsModal.querySelector('.close-modal');
-      customerDetailsModal.style.display = 'block';
-
-      // Close modal when clicking the close button
-      const closeCustomerDetailsModal = () => {
-        customerDetailsModal.style.display = 'none';
-      };
-
-      closeModal.addEventListener('click', closeCustomerDetailsModal);
-
-      // Close modal when clicking outside the modal content
-      customerDetailsModal.addEventListener('click', (e) => {
-        if (e.target === customerDetailsModal) {
-          closeCustomerDetailsModal();
-        }
-      });
-
-      // Handle form submission
-      const customerForm = document.getElementById('customer-details-form');
-      customerForm.onsubmit = (e) => {
-        e.preventDefault();
-
-        const customerName = document.getElementById('customer-name').value;
-        const customerPhone = document.getElementById('customer-phone').value;
-        const customerAddress = document.getElementById('customer-address').value;
-
-        let message = "*Pedido do Dogão do Canela Fina*\n\n";
-        message += `*Nome:* ${customerName}\n`;
-        message += `*Telefone:* ${customerPhone}\n`;
-        message += `*Endereço:* ${customerAddress}\n\n`;
-        message += "*Itens do Pedido:*\n";
-
-        let total = 0;
-        let itemCount = {};
-
-        this.cart.forEach((item) => {
-          const priceValue = parseFloat(item.price.replace('R$ ', '').replace(',', '.'));
-          
-          itemCount[item.name] = (itemCount[item.name] || 0) + 1;
-          
-          total += priceValue;
-        });
-
-        Object.entries(itemCount).forEach(([name, count]) => {
-          message += `${count}x ${name}\n`;
-        });
-
-        // Adicionar informação sobre taxa de entrega
-        message += "\n*Observação:* Taxa de entrega será calculada conforme endereço.\n";
-        message += `*Total:* R$ ${total.toFixed(2).replace('.', ',')}`;
-
-        const encodedMessage = encodeURIComponent(message);
-        const phoneNumber = '5571996447078'; 
-        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-        
-        window.open(whatsappUrl, '_blank');
-
-        // Reset and close modals
-        this.cart = [];
-        this.updateCartDisplay();
-        document.getElementById('cart-modal').style.display = 'none';
-        customerDetailsModal.style.display = 'none';
-        customerForm.reset();
-      };
-    } catch (error) {
-      console.error('Erro no checkout:', error);
-      alert(error.message || 'Não foi possível finalizar o pedido.');
     }
   }
 
@@ -406,33 +340,78 @@ class OrderManager {
     const addToCartButtons = document.querySelectorAll('.add-to-cart');
     addToCartButtons.forEach(button => {
       button.addEventListener('click', (e) => {
-        const item = e.target.closest('.menu-item, .drink-item');
-        const name = item.querySelector('h3, span').textContent;
-        const price = item.querySelector('.price').textContent;
-        this.addToCart({ name, price });
+        const menuItem = e.target.closest('.menu-item, .drink-item');
+        const name = menuItem.querySelector('h3, span').textContent;
+        const price = menuItem.querySelector('.price').textContent;
+        this.addToCart({ 
+          name, 
+          price,
+          element: menuItem 
+        });
       });
     });
+  }
+
+  setupCustomizationHandlers() {
+    document.querySelectorAll('.menu-item, .drink-item').forEach(item => {
+      const checkboxes = item.querySelectorAll('input[type="checkbox"]');
+      const quantityInputs = item.querySelectorAll('.qty-input');
+
+      checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+          this.updateCustomizationState(item);
+        });
+      });
+
+      quantityInputs.forEach(input => {
+        input.addEventListener('change', () => {
+          this.updateCustomizationState(item);
+        });
+      });
+    });
+  }
+
+  updateCustomizationState(item) {
+    const customizations = {
+      molhos: [],
+      adicionais: []
+    };
+
+    item.querySelectorAll('input[name="molhos"]:checked').forEach(molho => {
+      customizations.molhos.push(molho.value);
+    });
+
+    item.querySelectorAll('.adicional-item').forEach(adicional => {
+      const nome = adicional.querySelector('span').textContent;
+      const quantidade = parseInt(adicional.querySelector('.qty-input').value);
+      if (quantidade > 0) {
+        customizations.adicionais.push({
+          nome,
+          quantidade
+        });
+      }
+    });
+
+    item.customizations = customizations;
   }
 
   addToCart(item) {
     try {
       if (!item.name || !item.price) {
-        throw new Error('Item inválido');
+        throw new Error('Invalid cart item');
       }
 
-      if (this.cart.length >= 10) {
-        alert('Limite máximo do carrinho atingido.');
-        return;
+      if (item.element) {
+        this.updateCustomizationState(item.element);
+        item.customizations = item.element.customizations;
       }
-
-      console.log('Adding to cart:', item);
 
       this.cart.push(item);
       this.updateCartDisplay();
       this.inlineCartManager.updateCart(this.cart);
     } catch (error) {
-      console.error('Erro ao adicionar item:', error);
-      alert('Não foi possível adicionar o item ao carrinho. Tente novamente.');
+      console.error('Add to cart error:', error);
+      alert('Could not add item to cart. Please try again.');
     }
   }
 
@@ -441,7 +420,6 @@ class OrderManager {
     this.updateCartDisplay();
     this.inlineCartManager.updateCart(this.cart);
     
-    // Update cart count
     document.getElementById('cart-count').textContent = '0';
   }
 
@@ -608,6 +586,105 @@ class OrderManager {
     modal.appendChild(errorContent);
     document.body.appendChild(modal);
   }
+
+  generateWhatsAppMessage() {
+    try {
+      if (this.cart.length === 0) {
+        throw new Error('Carrinho vazio');
+      }
+
+      const customerDetailsModal = document.getElementById('customer-details-modal');
+      const closeModal = customerDetailsModal.querySelector('.close-modal');
+      const fillPreviousButton = document.getElementById('fill-previous-data');
+      customerDetailsModal.style.display = 'block';
+
+      const savedData = localStorage.getItem('customerData');
+      fillPreviousButton.style.display = savedData ? 'block' : 'none';
+
+      const closeCustomerDetailsModal = () => {
+        customerDetailsModal.style.display = 'none';
+      };
+
+      closeModal.addEventListener('click', closeCustomerDetailsModal);
+
+      customerDetailsModal.addEventListener('click', (e) => {
+        if (e.target === customerDetailsModal) {
+          closeCustomerDetailsModal();
+        }
+      });
+
+      fillPreviousButton.addEventListener('click', () => {
+        const savedData = localStorage.getItem('customerData');
+        if (savedData) {
+          const customerData = JSON.parse(savedData);
+          document.getElementById('customer-name').value = customerData.name;
+          document.getElementById('customer-phone').value = customerData.phone;
+          document.getElementById('customer-address').value = customerData.address;
+        }
+      });
+
+      const customerForm = document.getElementById('customer-details-form');
+      customerForm.onsubmit = (e) => {
+        e.preventDefault();
+
+        const customerData = {
+          name: document.getElementById('customer-name').value,
+          phone: document.getElementById('customer-phone').value,
+          address: document.getElementById('customer-address').value
+        };
+
+        localStorage.setItem('customerData', JSON.stringify(customerData));
+
+        let message = "*Pedido do Dogão do Canela Fina*\n\n";
+        message += `*Nome:* ${customerData.name}\n`;
+        message += `*Telefone:* ${customerData.phone}\n`;
+        message += `*Endereço:* ${customerData.address}\n\n`;
+        message += "*Itens do Pedido:*\n";
+
+        let total = 0;
+        let itemCount = {};
+
+        this.cart.forEach((item) => {
+          message += `\n${item.name}\n`;
+      
+          if (item.customizations) {
+            if (item.customizations.molhos.length > 0) {
+              message += `Molhos: ${item.customizations.molhos.join(', ')}\n`;
+            }
+        
+            if (item.customizations.adicionais.length > 0) {
+              message += "Adicionais:\n";
+              item.customizations.adicionais.forEach(adicional => {
+                message += `- ${adicional.quantidade}x ${adicional.nome}\n`;
+              });
+            }
+          }
+
+          const priceValue = parseFloat(item.price.replace('R$ ', '').replace(',', '.'));
+          itemCount[item.name] = (itemCount[item.name] || 0) + 1;
+          total += priceValue;
+        });
+
+        Object.entries(itemCount).forEach(([name, count]) => {
+          message += `${count}x ${name}\n`;
+        });
+
+        message += "\n*Observação:* Taxa de entrega será calculada conforme endereço.\n";
+        message += `*Total:* R$ ${total.toFixed(2).replace('.', ',')}`;
+
+        const encodedMessage = encodeURIComponent(message);
+        const phoneNumber = '5571996447078';
+        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
+        
+        window.open(whatsappUrl, '_blank');
+
+        window.location.reload();
+      };
+    } catch (error) {
+      console.error('Erro no checkout:', error);
+      alert(error.message || 'Não foi possível finalizar o pedido.');
+    }
+  }
 }
 
 window.addEventListener('error', (event) => {
@@ -620,22 +697,43 @@ document.addEventListener('DOMContentLoaded', () => {
     const hamburgerMenu = document.querySelector('.hamburger-menu');
     const nav = document.querySelector('nav');
 
-    hamburgerMenu.addEventListener('click', () => {
-      hamburgerMenu.classList.toggle('active');
-      nav.classList.toggle('active');
-    });
-
-    // Close mobile menu when a nav link is clicked
-    nav.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-        hamburgerMenu.classList.remove('active');
-        nav.classList.remove('active');
+    if (hamburgerMenu && nav) {
+      hamburgerMenu.addEventListener('click', () => {
+        hamburgerMenu.classList.toggle('active');
+        nav.classList.toggle('active');
       });
-    });
+
+      nav.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          hamburgerMenu.classList.remove('active');
+          nav.classList.remove('active');
+        });
+      });
+    }
 
     new OrderManager();
   } catch (error) {
-    console.error('Falha ao inicializar o sistema de pedidos:', error);
-    alert('Não foi possível carregar o sistema de pedidos. Tente recarregar a página.');
+    console.error('System initialization failed:', error);
+    alert('Could not load the ordering system. Please reload the page.');
   }
+});
+
+document.querySelectorAll('.quantity-control').forEach(control => {
+  const input = control.querySelector('.qty-input');
+  const minusBtn = control.querySelector('.minus');
+  const plusBtn = control.querySelector('.plus');
+
+  minusBtn.addEventListener('click', () => {
+    const currentValue = parseInt(input.value);
+    if (currentValue > 0) {
+      input.value = currentValue - 1;
+    }
+  });
+
+  plusBtn.addEventListener('click', () => {
+    const currentValue = parseInt(input.value);
+    if (currentValue < 2) {
+      input.value = currentValue + 1;
+    }
+  });
 });

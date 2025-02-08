@@ -111,6 +111,22 @@ nav a:hover {
   transform: translateY(-3px);
 }
 
+.fill-previous-button {
+  background: var(--yellow);
+  color: var(--dark);
+  border: none;
+  padding: 8px 16px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  transition: background var(--transition-speed) ease;
+}
+
+.fill-previous-button:hover {
+  background: #ffec00;
+}
+
 .hero-dog img {
   width: 200px;
   height: 200px;
