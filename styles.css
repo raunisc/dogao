@@ -1,4 +1,5 @@
 :root {
+  /* Expandir variáveis de cores */
   --red: #c00;
   --yellow: #ffd700;
   --dark: #222;
@@ -9,6 +10,16 @@
   --transition-speed: 0.3s;
   --box-shadow-small: 0 5px 15px rgba(0, 0, 0, 0.1);
   --box-shadow-medium: 0 8px 20px rgba(0, 0, 0, 0.15);
+
+   /* Tipografia responsiva */
+   --font-size-base: clamp(16px, 1vw + 1rem, 18px);
+   --font-size-small: clamp(14px, 0.8vw + 0.8rem, 16px);
+
+
+    /* Transições e animações padronizadas */
+    --transition-fast: 0.2s ease;
+    --transition-normal: 0.3s ease;
+    --transition-slow: 0.5s ease;
 }
 
 * {
@@ -300,6 +311,35 @@ nav a:hover {
 
 .add-to-cart:hover {
   background: #a00;
+}
+
+.menu-item.unavailable,
+.drink-item.unavailable {
+  opacity: 0.5;
+  pointer-events: stroke;
+}
+
+.menu-item.unavailable .add-to-cart,
+.drink-item.unavailable .add-to-cart {
+  background-color: #cccccc;
+  cursor: not-allowed;
+  color: black;
+  font-weight: bold;
+}
+
+.menu-item.unavailable::after,
+.drink-item.unavailable::after {
+  content: "Indisponível";
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 5px;
+  z-index: 10;
+  display: none;
 }
 
 .contact-section {
@@ -797,4 +837,22 @@ nav a:hover {
   font-size: 0.9rem;
   color: #666;
   margin-bottom: 1rem;
+}
+
+/* Foco e interação */
+*:focus {
+  outline: 3px solid var(--primary-color);
+  outline-offset: 2px;
+}
+
+/* Reduzir movimento para usuários que preferem menos animação */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+img[data-loaded="true"] {
+  opacity: 1;
 }

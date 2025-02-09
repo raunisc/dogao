@@ -317,6 +317,66 @@ class PromoManager {
   }
 }
 
+class InventoryManager {
+  constructor() {
+    this.unavailableItems = [
+      // ADICIONE OS ITENS INDISPONIVEIS
+      // 'Dogão de Carne'
+      'Coca Cola Lata Zero',
+      'Guarana Lata',
+      'Coca Cola Lata'
+    ];
+
+    this.initializeUnavailableItems();
+  }
+
+  initializeUnavailableItems() {
+    this.unavailableItems.forEach(itemName => {
+      this.markItemUnavailable(itemName);
+    });
+  }
+
+  markItemUnavailable(itemName) {
+    const items = [
+      ...document.querySelectorAll('.menu-item'),
+      ...document.querySelectorAll('.drink-item')
+    ];
+
+    const item = items.find(el => 
+      el.querySelector('h3, span')?.textContent.trim() === itemName.trim()
+    );
+
+    if (item) {
+      item.classList.add('unavailable');
+      const addToCartButton = item.querySelector('.add-to-cart');
+      if (addToCartButton) {
+        addToCartButton.disabled = true;
+        addToCartButton.textContent = 'Indisponível';
+      }
+    }
+  }
+
+  markItemAvailable(itemName) {
+    const items = [
+      ...document.querySelectorAll('.menu-item'),
+      ...document.querySelectorAll('.drink-item')
+    ];
+
+    const item = items.find(el => 
+      el.querySelector('h3, span')?.textContent.trim() === itemName.trim()
+    );
+
+    if (item) {
+      item.classList.remove('unavailable');
+      const addToCartButton = item.querySelector('.add-to-cart');
+      if (addToCartButton) {
+        addToCartButton.disabled = false;
+        addToCartButton.textContent = 'Adicionar';
+      }
+    }
+  }
+}
+
 class OrderManager {
   constructor() {
     try {
@@ -330,6 +390,15 @@ class OrderManager {
       window.orderManager = this;
       this.inlineCartManager = new InlineCartManager(this);
       this.promoManager = new PromoManager();
+      this.inventoryManager = new InventoryManager();
+      
+      window.markItemUnavailable = (itemName) => {
+        this.inventoryManager.markItemUnavailable(itemName);
+      };
+      
+      window.markItemAvailable = (itemName) => {
+        this.inventoryManager.markItemAvailable(itemName);
+      };
     } catch (error) {
       console.error('Initialization error:', error);
       this.showInitializationError();
