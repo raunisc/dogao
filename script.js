@@ -323,8 +323,7 @@ class InventoryManager {
       // ADICIONE OS ITENS INDISPONIVEIS
       // 'Dogão de Carne'
       'Coca Cola Lata Zero',
-      'Guarana Lata',
-      'Coca Cola Lata'
+      'Guarana Lata'
     ];
 
     this.initializeUnavailableItems();
@@ -756,6 +755,125 @@ class OrderManager {
   }
 }
 
+class RestaurantStatusManager {
+  constructor() {
+    this.SITE_STATUS = 'auto'; 
+    this.statusModal = document.getElementById('restaurant-status-modal');
+    this.viewMenuBtn = document.getElementById('view-menu-btn');
+    this.closedOverlay = this.createClosedOverlay();
+
+    this.businessHours = {
+      friday: { open: '18:00', close: '00:00' },
+      weekendDays: { open: '16:00', close: '00:00' }
+    };
+
+    this.initializeStatusCheck();
+    this.setupEventListeners();
+  }
+
+  createClosedOverlay() {
+    const overlay = document.createElement('div');
+    overlay.classList.add('closed-overlay');
+    
+    const content = document.createElement('div');
+    content.classList.add('closed-overlay-content');
+    content.innerHTML = `
+      <h3>Estamos Fechados no Momento</h3>
+      <p>Você pode visualizar o cardápio, mas não é possível fazer pedidos fora do nosso horário de funcionamento.</p>
+      <p>Horário de funcionamento:</p>
+      <p>Sexta-feira: 18:00 - 00:00</p>
+      <p>Sábado e Domingo: 16:00 - 00:00</p>
+    `;
+    
+    overlay.appendChild(content);
+    document.body.appendChild(overlay);
+    
+    return overlay;
+  }
+
+  initializeStatusCheck() {
+    this.checkRestaurantStatus();
+  }
+
+  setupEventListeners() {
+    this.viewMenuBtn?.addEventListener('click', () => {
+      this.statusModal.style.display = 'none';
+      document.body.classList.remove('closed-site');
+    });
+  }
+
+  checkRestaurantStatus() {
+    const now = new Date();
+    const currentDay = now.getDay();
+    const currentTime = this.formatTime(now);
+
+    let isOpen = false;
+
+    if (this.SITE_STATUS === 'open') {
+      isOpen = true;
+    } else if (this.SITE_STATUS === 'closed') {
+      isOpen = false;
+    } else {
+      if (currentDay === 5) { 
+        isOpen = this.isTimeInRange(currentTime, this.businessHours.friday.open, this.businessHours.friday.close);
+      } else if (currentDay === 6 || currentDay === 0) { 
+        isOpen = this.isTimeInRange(currentTime, this.businessHours.weekendDays.open, this.businessHours.weekendDays.close);
+      }
+    }
+
+    this.updateSiteStatus(isOpen);
+  }
+
+  formatTime(date) {
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    return `${hours}:${minutes}`;
+  }
+
+  isTimeInRange(currentTime, openTime, closeTime) {
+    const [currentHours, currentMinutes] = currentTime.split(':').map(Number);
+    const [openHours, openMinutes] = openTime.split(':').map(Number);
+    const [closeHours, closeMinutes] = closeTime.split(':').map(Number);
+
+    const currentTotalMinutes = currentHours * 60 + currentMinutes;
+    const openTotalMinutes = openHours * 60 + openMinutes;
+    const closeTotalMinutes = closeHours * 60 + closeMinutes;
+
+    if (closeTotalMinutes < openTotalMinutes) {
+      return currentTotalMinutes >= openTotalMinutes || currentTotalMinutes <= closeTotalMinutes;
+    }
+
+    return currentTotalMinutes >= openTotalMinutes && currentTotalMinutes <= closeTotalMinutes;
+  }
+
+  updateSiteStatus(isOpen) {
+    if (!isOpen) {
+      document.body.classList.add('closed-site');
+      this.statusModal.style.display = 'flex';
+      
+      // Disable all add to cart buttons
+      document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.disabled = true;
+        button.textContent = 'Indisponível';
+      });
+    } else {
+      document.body.classList.remove('closed-site');
+      this.statusModal.style.display = 'none';
+      
+      // Re-enable all add to cart buttons
+      document.querySelectorAll('.add-to-cart').forEach(button => {
+        button.disabled = false;
+        button.textContent = 'Adicionar';
+      });
+    }
+  }
+
+  manualStatusOverride(status) {
+    this.SITE_STATUS = status;
+    this.checkRestaurantStatus();
+  }
+}
+
 window.addEventListener('error', (event) => {
   console.error('Unhandled error:', event.error);
   alert('Ocorreu um erro inesperado. Por favor, recarregue a página.');
@@ -785,6 +903,10 @@ document.addEventListener('DOMContentLoaded', () => {
     console.error('System initialization failed:', error);
     alert('Could not load the ordering system. Please reload the page.');
   }
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+  window.restaurantStatusManager = new RestaurantStatusManager();
 });
 
 document.querySelectorAll('.quantity-control').forEach(control => {
