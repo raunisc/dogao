@@ -847,9 +847,16 @@ class RestaurantStatusManager {
   }
 
   updateSiteStatus(isOpen) {
+    const statusIndicator = document.getElementById('restaurant-status-indicator');
+    const statusText = document.getElementById('restaurant-status-text');
+
     if (!isOpen) {
       document.body.classList.add('closed-site');
       this.statusModal.style.display = 'flex';
+      
+      statusIndicator.classList.remove('open');
+      statusIndicator.classList.add('closed');
+      statusText.textContent = 'Restaurante Fechado';
       
       // Disable all add to cart buttons
       document.querySelectorAll('.add-to-cart').forEach(button => {
@@ -859,6 +866,10 @@ class RestaurantStatusManager {
     } else {
       document.body.classList.remove('closed-site');
       this.statusModal.style.display = 'none';
+      
+      statusIndicator.classList.remove('closed');
+      statusIndicator.classList.add('open');
+      statusText.textContent = 'Restaurante Aberto';
       
       // Re-enable all add to cart buttons
       document.querySelectorAll('.add-to-cart').forEach(button => {
