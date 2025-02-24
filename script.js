@@ -561,15 +561,6 @@ class OrderManager {
     });
   }
 
-  setupFormHandler() {
-    const contactForm = document.querySelector('.contact-form');
-    contactForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      alert('Pedido enviado com sucesso! Entraremos em contato para confirmação.');
-      this.reset();
-    });
-  }
-
   setupFloatAnimation() {
     const floatItems = document.querySelectorAll('.menu-item, .drink-item');
     floatItems.forEach(item => {
@@ -646,6 +637,8 @@ document.addEventListener('DOMContentLoaded', () => {
   try {
     const hamburgerMenu = document.querySelector('.hamburger-menu');
     const nav = document.querySelector('nav');
+    const operatingHoursModal = document.getElementById('operating-hours-modal');
+    const operatingHoursClose = document.querySelector('.operating-hours-close');
 
     hamburgerMenu.addEventListener('click', () => {
       hamburgerMenu.classList.toggle('active');
@@ -660,6 +653,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     new OrderManager();
+    
+    // Show operating hours modal on initial load
+    operatingHoursModal.style.display = 'flex';
+
+    operatingHoursClose.addEventListener('click', () => {
+      operatingHoursModal.style.display = 'none';
+    });
+
+    // Close the operating hours modal if the user clicks outside of it
+    window.addEventListener('click', (event) => {
+      if (event.target == operatingHoursModal) {
+        operatingHoursModal.style.display = 'none';
+      }
+    });
+
   } catch (error) {
     console.error('Falha ao inicializar o sistema de pedidos:', error);
     alert('Não foi possível carregar o sistema de pedidos. Tente recarregar a página.');
