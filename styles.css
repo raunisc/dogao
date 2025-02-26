@@ -146,7 +146,7 @@ nav a:hover {
   }
 }
 
-.menu-section,
+.menu-section,.menu-section-1,
 .drinks-section {
   padding: 4rem 1rem;
   background: white;
@@ -154,7 +154,7 @@ nav a:hover {
   margin: 0 auto;
 }
 
-.menu-section h2,
+.menu-section h2,.menu-section-1 h2,
 .drinks-section h2 {
   text-align: center;
   font-family: var(--secondary-font);
@@ -164,10 +164,16 @@ nav a:hover {
 }
 
 .menu-grid {
-    display: grid;
+    display: flex;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 2rem;
     justify-items: start; /* Alinha itens à esquerda */
+}
+
+.menu-grid-1 {
+  display: flex;
+  gap: 2rem;
+  justify-items: start; /* Alinha itens à esquerda */
 }
 
   .drinks-grid {
@@ -194,7 +200,7 @@ nav a:hover {
     justify-items: start; /* Add this to align drink items to the left */
 }
 
-.menu-item,
+.menu-item,.menu-item-1,
 .drink-item {
   background: white;
   padding: 2rem;
@@ -206,6 +212,42 @@ nav a:hover {
   flex-direction: column;
   position: relative;
   overflow: hidden;
+}
+
+.menu-item.on-sale {
+  border: 2px solid var(--yellow);
+}
+
+.menu-item.on-sale::before {
+  background: linear-gradient(
+    45deg,
+    transparent,
+    rgba(255, 255, 0, 0.2), 
+    transparent
+  );
+}
+
+.menu-item.on-sale .price {
+  color: var(--red);
+  font-weight: bold;
+}
+
+.drink-item.on-sale .price {
+  color: var(--red);
+  font-weight: bold;
+}
+
+.drink-item.on-sale .original-price {
+  text-decoration: line-through;
+  color: #888;
+  font-size: 0.9rem;
+  margin-bottom: 0.3rem;
+}
+.menu-item.on-sale .original-price {
+  text-decoration: line-through;
+  color: #888;
+  font-size: 0.9rem;
+  margin-bottom: 0.3rem;
 }
 
 .menu-item::before,

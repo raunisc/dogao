@@ -436,7 +436,8 @@ class OrderManager {
       button.addEventListener('click', (e) => {
         const item = e.target.closest('.menu-item, .drink-item');
         const name = item.querySelector('h3, span').textContent;
-        const price = item.querySelector('.price').textContent;
+        let priceElement = item.querySelector('.price');
+        const price = priceElement.textContent;
         this.addToCart({ name, price });
       });
     });
@@ -651,6 +652,57 @@ document.addEventListener('DOMContentLoaded', () => {
         nav.classList.remove('active');
       });
     });
+
+    // Sample usage:  (You'd likely fetch this data from a server or local storage)
+    const menuItemsData = [
+      { name: "Hot-Dog Clássico", onSale: true, promotionalPrice: "R$ 4,90" },
+      { name: "Dogão Tradicional", onSale: true, promotionalPrice: "R$ 11,90" },
+      { name: "Dogão de Bovino", onSale: true, promotionalPrice: "R$ 16,90" },
+      { name: "Dogão de Frango", onSale: true, promotionalPrice: "R$ 16,90" },
+      { name: "Batata Suprema", onSale: true, promotionalPrice: "R$ 8,90" },
+      { name: "Batata Chips", onSale: true, promotionalPrice: "R$ 8,90" },
+      { name: "Coca Cola Lata", onSale: true, promotionalPrice: "R$ 5,90" },
+      { name: "Coca Cola Lata Zero", onSale: true, promotionalPrice: "R$ 5,90" },
+      { name: "Guarana Lata", onSale: true, promotionalPrice: "R$ 5,90" },
+      { name: "Pepsi Lata", onSale: true, promotionalPrice: "R$ 5,90" },
+    ];
+
+    // Function to apply sale prices to items
+    function applySalePrices(itemsData) {
+      const menuGrid = document.querySelector('.menu-grid'); // or drinks-grid as needed
+      const menuItems = menuGrid ? menuGrid.querySelectorAll('.menu-item') : []; // Adjust selector if needed
+
+      const menuGrid1 = document.querySelector('.menu-grid-1'); // or drinks-grid as needed
+      const menuItems1 = menuGrid1 ? menuGrid1.querySelectorAll('.menu-item') : []; // Adjust selector if needed
+
+
+      const drinksGrid = document.querySelector('.drinks-grid');
+      const drinkItems = drinksGrid ? drinksGrid.querySelectorAll('.drink-item') : [];
+
+      const allItems = [...menuItems, ...menuItems1, ...drinkItems];
+
+      allItems.forEach(item => {
+        const itemName = item.querySelector('h3, span').textContent;
+        const itemData = itemsData.find(data => data.name === itemName);
+
+        if (itemData && itemData.onSale) {
+          item.classList.add('on-sale');
+
+          // Create a span for the original price
+          const originalPriceSpan = document.createElement('span');
+          originalPriceSpan.classList.add('original-price');
+          const priceElement = item.querySelector('.price');
+          originalPriceSpan.textContent = priceElement.textContent;
+          item.insertBefore(originalPriceSpan, priceElement); // Inserts before the current price
+
+          // Update the item price with the promotional price
+          item.querySelector('.price').textContent = itemData.promotionalPrice;
+        }
+      });
+    }
+
+    // Call the function to apply sale prices
+    applySalePrices(menuItemsData);
 
     new OrderManager();
     
