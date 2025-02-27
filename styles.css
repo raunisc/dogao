@@ -171,7 +171,7 @@ nav a:hover {
 }
 
 .menu-grid-1 {
-  display: flex;
+  display: grid;
   gap: 2rem;
   justify-items: start; /* Alinha itens à esquerda */
 }
