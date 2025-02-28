@@ -148,7 +148,7 @@ nav a:hover {
 
 .menu-section,.menu-section-1,
 .drinks-section {
-  padding: 4rem 1rem;
+  padding: 2rem 1rem;
   background: white;
   max-width: 1200px;
   margin: 0 auto;
@@ -159,7 +159,7 @@ nav a:hover {
   text-align: center;
   font-family: var(--secondary-font);
   color: var(--red);
-  font-size: 2.5rem;
+  font-size: 6.5vh;
   margin-bottom: 2rem;
 }
 
@@ -167,25 +167,29 @@ nav a:hover {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 2rem;
-    justify-items: start; /* Alinha itens à esquerda */
+    justify-items: start; 
 }
 
 .menu-grid-1 {
   display: grid;
-  gap: 2rem;
-  justify-items: start; /* Alinha itens à esquerda */
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  justify-items: start;
+  justify-content: start;
 }
 
-  .drinks-grid {
-    grid-template-columns: 1fr;
+.drinks-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
-  }
+    width: 100%;
+    justify-items: start; 
+}
 
-  .drink-item {
+.drink-item {
     width: 100%;
     max-width: 400px;
     margin: 0 auto;
-  }
+}
 
 
 .drink-category {
@@ -197,7 +201,7 @@ nav a:hover {
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     gap: 1rem;
     width: 100%;
-    justify-items: start; /* Add this to align drink items to the left */
+    justify-items: start; 
 }
 
 .menu-item,.menu-item-1,
@@ -727,7 +731,7 @@ nav a:hover {
 }
 
 @media (max-width: 968px) {
-  .menu-grid, .menu-grid-1,
+  .menu-grid,
   .drinks-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
