@@ -727,7 +727,7 @@ nav a:hover {
 }
 
 @media (max-width: 968px) {
-  .menu-grid,
+  .menu-grid, .menu-grid-1,
   .drinks-grid {
     grid-template-columns: 1fr;
     gap: 1rem;
