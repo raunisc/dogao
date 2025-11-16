@@ -660,11 +660,11 @@ document.addEventListener('DOMContentLoaded', () => {
       { name: "Dogão de Bovino", onSale: true, promotionalPrice: "R$ 16,90" },
       { name: "Dogão de Frango", onSale: true, promotionalPrice: "R$ 16,90" },
       { name: "Batata Suprema", onSale: true, promotionalPrice: "R$ 8,90" },
-      { name: "Batata Chips", onSale: false, promotionalPrice: "R$ 8,90" },
+    //  { name: "Batata Chips", onSale: false, promotionalPrice: "R$ 8,90" },
       { name: "Coca Cola Lata", onSale: true, promotionalPrice: "R$ 5,90" },
-      { name: "Coca Cola Lata Zero", onSale: false, promotionalPrice: "R$ 5,90" },
+    // { name: "Coca Cola Lata Zero", onSale: false, promotionalPrice: "R$ 5,90" },
       { name: "Guarana Lata", onSale: true, promotionalPrice: "R$ 5,90" },
-      { name: "Pepsi Lata", onSale: false, promotionalPrice: "R$ 5,90" },
+     // { name: "Pepsi Lata", onSale: false, promotionalPrice: "R$ 5,90" },
     ];
 
     // Function to apply sale prices to items
@@ -726,3 +726,4 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
 });
+
