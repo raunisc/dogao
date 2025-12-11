@@ -1,251 +1,384 @@
+<!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dogão do Canela Fina - Melhor HotDog da Cidade!</title>
-  <link rel="stylesheet" href="styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=Bungee&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <link rel="icon" href="logo.webp" type="image/webp">
-  <meta name="description" content="O melhor dogão de Lauro de Freitas. Venha experimentar o Dogão do Canela Fina!">
-  <meta name="keywords" content="Dogão, HotDog, Lauro de Freitas, Melhor HotDog, Melhor Dogão, Dogão do Canela Fina">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dogão do Canela Fina - Cardápio</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <!-- Operating Hours Modal -->
-  <div id="operating-hours-modal" class="modal">
-    <div class="operating-hours-container">
-      <div class="operating-hours-content">
-        <span class="operating-hours-close">&times;</span>
-        <h2>Horário de Funcionamento</h2>
-        
-        <ul class="operating-hours-list">
-          <li>
-            <span>Terça à Domingo</span>
-            <span>18:00 - 23:00</span>
-          </li>
-        </ul>
-        <H2>ATENÇÃO!</H2>
-        <h3>Frete Grátis para Vida Nova.</h3>
-        <h4>Aproveite por tempo limitado.</h4>
+  <div class="toolbar">
+    <div class="brand">
+      <img src="imagens/logo.webp" alt="Logo Dogão do Canela Fina" />
+      <div class="brand-text">
+        <strong>Dogão do Canela Fina</strong>
+        <span>Cardápio</span>
       </div>
+    </div>
+    <div class="tools">
+      <!-- Carrinho fixo no canto superior direito -->
+      <button class="cart-icon" id="top-cart-button" type="button">
+        <span class="cart-icon-symbol">🛒</span>
+        <span class="cart-icon-count" id="top-cart-count">0</span>
+      </button>
     </div>
   </div>
 
-  <!-- Inline Cart Dropdown -->
-  <div id="inline-cart" class="inline-cart">
-    <div class="inline-cart-header">
-      <h3>Seu Carrinho</h3>
-      <span id="inline-cart-count">0 itens</span>
-    </div>
-    <div id="inline-cart-items" class="inline-cart-items">
-      <!-- Cart items will be dynamically added here -->
-    </div>
-    <div class="inline-cart-summary">
-      <div class="inline-cart-total">
-        <span>Total:</span>
-        <span id="inline-cart-total">R$ 0,00</span>
+  <div id="document" class="document">
+    <!-- Página única -->
+    <section class="sheet">
+      <header class="sheet-header">
+        <div class="sheet-title-group">
+          <h1>Menu do Canela Fina</h1>
+        </div>
+        <img class="sheet-logo" src="imagens/logo.webp" alt="Logo Dogão do Canela Fina" />
+      </header>
+      <h2 class="section-title">Dogões</h2>
+      <div class="grid">
+        <!-- Dogão do Canela Fina -->
+        <article class="card" data-product-id="dogao-canela" data-name="Dogão do Canela Fina" data-price="15.90">
+          <img src="imagens/Dogao Tradicional.png" alt="Dogão do Canela Fina" />
+          <div class="card-info">
+            <h3>Dogão do Canela Fina</h3>
+            <p>2 Salsichas, Cebola Crisp, Barbecue, Molho Especial e Cheddar</p>
+          </div>
+          <div class="price">
+            <span class="old">R$ 22,90</span>
+            <span class="new">R$ 15,90</span>
+            <button class="add-btn" type="button">Adicionar</button>
+          </div>
+        </article>
+
+        <!-- Dogão Tradicional -->
+        <article class="card" data-product-id="dogao-tradicional" data-name="Dogão Tradicional" data-price="11.90">
+          <img src="imagens/Dogao Tradicional.png" alt="Dogão Tradicional" />
+          <div class="card-info">
+            <h3>Dogão Tradicional</h3>
+            <p>2 Salsichas, Barbecue, Molho Especial e Cheddar</p>
+          </div>
+          <div class="price">
+            <span class="old">R$ 17,90</span>
+            <span class="new">R$ 11,90</span>
+            <button class="add-btn" type="button">Adicionar</button>
+          </div>
+        </article>
+
+        <!-- Dogão do Canela Fina 4.0 (mesma foto) -->
+        <article class="card" data-product-id="dogao-canela-4" data-name="Dogão do Canela Fina 4.0" data-price="20.90">
+          <img src="imagens/Dogao Tradicional.png" alt="Dogão do Canela Fina 4.0" />
+          <div class="card-info">
+            <h3>Dogão do Canela Fina 4.0</h3>
+            <p>4 Salsichas, Cebola Crisp, Barbecue, Molho Especial e Cheddar</p>
+          </div>
+          <div class="price">
+            <span class="old">R$ 28,90</span>
+            <span class="new">R$ 20,90</span>
+            <button class="add-btn" type="button">Adicionar</button>
+          </div>
+        </article>
+
+        <!-- Dogão Tradicional 4.0 -->
+        <article class="card" data-product-id="dogao-tradicional-4" data-name="Dogão Tradicional 4.0" data-price="17.90">
+          <img src="imagens/Dogao Tradicional.png" alt="Dogão Tradicional 4.0" />
+          <div class="card-info">
+            <h3>Dogão Tradicional 4.0</h3>
+            <p>4 Salsichas, Barbecue, Molho Especial e Cheddar</p>
+          </div>
+          <div class="price">
+            <span class="old">R$ 24,90</span>
+            <span class="new">R$ 17,90</span>
+            <button class="add-btn" type="button">Adicionar</button>
+          </div>
+        </article>
+
+        <!-- Dogão Bovino -->
+        <article class="card" data-product-id="dogao-bovino" data-name="Dogão Bovino" data-price="20.90">
+          <img src="imagens/Dogao de Bovino.png" alt="Dogão Bovino" />
+          <div class="card-info">
+            <h3>Dogão Bovino</h3>
+            <p>2 Salsichas de carne bovina, Cebola Crisp, Barbecue, Molho Especial e Cheddar</p>
+          </div>
+          <div class="price">
+            <span class="old">R$ 29,90</span>
+            <span class="new">R$ 20,90</span>
+            <button class="add-btn" type="button">Adicionar</button>
+          </div>
+        </article>
+
+        <!-- Dogão Bovino 4.0 (mesma foto) -->
+        <article class="card" data-product-id="dogao-bovino-4" data-name="Dogão Bovino 4.0" data-price="25.90">
+          <img src="imagens/Dogao de Bovino.png" alt="Dogão Bovino 4.0" />
+          <div class="card-info">
+            <h3>Dogão Bovino 4.0</h3>
+            <p>4 Salsichas de carne bovina, Cebola Crisp, Barbecue, Molho Especial e Cheddar</p>
+          </div>
+          <div class="price">
+            <span class="old">R$ 36,90</span>
+            <span class="new">R$ 25,90</span>
+            <button class="add-btn" type="button">Adicionar</button>
+          </div>
+        </article>
+
+        <!-- Dogão de Frango -->
+        <article class="card" data-product-id="dogao-frango" data-name="Dogão de Frango" data-price="20.90">
+          <img src="imagens/Dogao de Frango.png" alt="Dogão de Frango" />
+          <div class="card-info">
+            <h3>Dogão de Frango</h3>
+            <p>2 Salsichas de frango, Cebola Crisp, Barbecue, Molho Especial e Cheddar</p>
+          </div>
+          <div class="price">
+            <span class="old">R$ 29,90</span>
+            <span class="new">R$ 20,90</span>
+            <button class="add-btn" type="button">Adicionar</button>
+          </div>
+        </article>
+
+        <!-- Dogão de Frango 4.0 (mesma foto) -->
+        <article class="card" data-product-id="dogao-frango-4" data-name="Dogão de Frango 4.0" data-price="25.90">
+          <img src="imagens/Dogao de Frango.png" alt="Dogão de Frango 4.0" />
+          <div class="card-info">
+            <h3>Dogão de Frango 4.0</h3>
+            <p>4 Salsichas de frango, Cebola Crisp, Barbecue, Molho Especial e Cheddar</p>
+          </div>
+          <div class="price">
+            <span class="old">R$ 36,90</span>
+            <span class="new">R$ 25,90</span>
+            <button class="add-btn" type="button">Adicionar</button>
+          </div>
+        </article>
       </div>
-      <div class="inline-cart-actions">
-        <button id="inline-cart-clear">Limpar Carrinho</button>
-        <button id="inline-cart-checkout">Finalizar Pedido</button>
+
+      <h2 class="section-title">Doguinhos</h2>
+      <div class="grid">
+        <!-- Doguinho do Canela Fina -->
+        <article class="card" data-product-id="doguinho-canela" data-name="Doguinho do Canela Fina" data-price="8.90">
+          <img src="imagens/Doguinho.png" alt="Doguinho do Canela Fina" />
+          <div class="card-info">
+            <h3>Doguinho do Canela Fina</h3>
+            <p>Pão, Salsicha, Crisp, Barbecue, Molho Vermelho e Molho Especial</p>
+          </div>
+          <div class="price">
+            <span class="old">R$ 12,90</span>
+            <span class="new">R$ 8,90</span>
+            <button class="add-btn" type="button">Adicionar</button>
+          </div>
+        </article>
+
+        <!-- Doguinho Tradicional -->
+        <article class="card" data-product-id="doguinho-tradicional" data-name="Doguinho Tradicional" data-price="6.90">
+          <img src="imagens/Doguinho Tradicional.png" alt="Doguinho Tradicional" />
+          <div class="card-info">
+            <h3>Doguinho Tradicional</h3>
+            <p>Pão, Salsicha, Barbecue, Molho Vermelho e Molho Especial</p>
+          </div>
+          <div class="price">
+            <span class="old">R$ 10,90</span>
+            <span class="new">R$ 6,90</span>
+            <button class="add-btn" type="button">Adicionar</button>
+          </div>
+        </article>
+
+        <!-- Doguinho Bovino (usa imagem bovino) -->
+        <article class="card" data-product-id="doguinho-bovino" data-name="Doguinho Bovino" data-price="12.90">
+          <img src="imagens/Doguinho de Carne.png" alt="Doguinho Bovino" />
+          <div class="card-info">
+            <h3>Doguinho Bovino</h3>
+            <p>1 Salsicha de carne bovina, Cebola Crisp, Barbecue, Molho Especial e Cheddar</p>
+          </div>
+          <div class="price">
+            <span class="old">R$ 17,90</span>
+            <span class="new">R$ 12,90</span>
+            <button class="add-btn" type="button">Adicionar</button>
+          </div>
+        </article>
+
+        <!-- Doguinho de Frango (usa imagem frango) -->
+        <article class="card" data-product-id="doguinho-frango" data-name="Doguinho de Frango" data-price="12.90">
+          <img src="imagens/Doguinho de frango.png" alt="Doguinho de Frango" />
+          <div class="card-info">
+            <h3>Doguinho de Frango</h3>
+            <p>1 Salsicha de frango, Cebola Crisp, Barbecue, Molho Especial e Cheddar</p>
+          </div>
+          <div class="price">
+            <span class="old">R$ 17,90</span>
+            <span class="new">R$ 12,90</span>
+            <button class="add-btn" type="button">Adicionar</button>
+          </div>
+        </article>
       </div>
+
+      <div class="list two-col">
+        <div class="list-group">
+          <h2>Bebidas</h2>
+          <div class="row" data-product-id="coca-lata" data-name="Coca-Cola Lata" data-price="6.90">
+            <div class="row-left">
+              <img src="imagens/coca_lata.png" alt="Coca-Cola Lata" class="row-img" />
+              <span>Coca-Cola Lata</span>
+            </div>
+            <strong>
+              <span class="old">R$ 7,90</span>
+              <span class="new">R$ 6,90</span>
+              <button class="add-btn small" type="button">Adicionar</button>
+            </strong>
+          </div>
+          <div class="row" data-product-id="guarana-lata" data-name="Guaraná Lata" data-price="6.90">
+            <div class="row-left">
+              <img src="imagens/guaranalata.png" alt="Guaraná Lata" class="row-img" />
+              <span>Guaraná Lata</span>
+            </div>
+            <strong>
+              <span class="old">R$ 7,90</span>
+              <span class="new">R$ 6,90</span>
+              <button class="add-btn small" type="button">Adicionar</button>
+            </strong>
+          </div>
+        </div>
+
+        <div class="list-group">
+          <h2>Acompanhamentos</h2>
+          <div class="row" data-product-id="batata-suprema" data-name="Batata Suprema" data-price="11.90">
+            <div class="row-left">
+              <img src="imagens/Batata Sayajins.png" alt="Batata Suprema" class="row-img" />
+              <span>Batata Suprema</span>
+            </div>
+            <strong>
+              <span class="old">R$ 12,90</span>
+              <span class="new">R$ 11,90</span>
+              <button class="add-btn small" type="button">Adicionar</button>
+            </strong>
+          </div>
+          <div class="row" data-product-id="batata-chips" data-name="Batata Chips" data-price="11.90">
+            <div class="row-left">
+              <img src="imagens/Chips do Poder.png" alt="Batata Chips" class="row-img" />
+              <span>Batata Chips</span>
+            </div>
+            <strong>
+              <span class="old">R$ 12,90</span>
+              <span class="new">R$ 11,90</span>
+              <button class="add-btn small" type="button">Adicionar</button>
+            </strong>
+          </div>
+        </div>
+      </div>
+
+      <footer class="sheet-footer">
+        <div class="brand-inline">
+          <img src="imagens/logo.webp" alt="Logo Dogão do Canela Fina" />
+          <span>Bom apetite!</span>
+        </div>
+      </footer>
+    </section>
+  </div>
+
+  <!-- Carrinho flutuante no canto inferior esquerdo (apenas ícone + quantidade) -->
+  <div id="floating-cart" class="floating-cart hidden">
+    <span class="cart-icon-symbol">🛒</span>
+    <span id="floating-cart-count" class="floating-cart-badge">0</span>
+  </div>
+
+  <!-- Bottom bar resumo -->
+  <div class="bottom-bar">
+    <div class="bottom-summary">
+      <span id="cart-count">0 itens</span>
+      <span id="cart-total">Total: R$ 0,00</span>
+    </div>
+    <button id="whatsapp-button" class="bottom-button" disabled>Enviar pedido no WhatsApp</button>
+  </div>
+
+  <!-- Drawer do carrinho -->
+  <div id="cart-drawer" class="cart-drawer hidden">
+    <div class="cart-drawer-backdrop" id="cart-drawer-backdrop"></div>
+    <div class="cart-drawer-panel">
+      <header class="cart-drawer-header">
+        <div class="cart-drawer-title-group">
+          <h2>Carrinho</h2>
+          <span id="cart-drawer-count" class="cart-drawer-count">0 itens</span>
+        </div>
+        <div class="cart-drawer-actions">
+          <button id="clear-cart-button" type="button" class="cart-drawer-clear">Limpar</button>
+          <button id="close-cart-button" type="button" class="cart-drawer-close">✕</button>
+        </div>
+      </header>
+      <div id="cart-items" class="cart-items">
+        <!-- Itens do carrinho renderizados via JS -->
+      </div>
+      <footer class="cart-drawer-footer">
+        <div class="cart-drawer-summary">
+          <span>Total</span>
+          <strong id="cart-drawer-total">R$ 0,00</strong>
+        </div>
+
+        <div class="delivery-options">
+          <div class="delivery-type">
+            <label>
+              <input type="radio" name="deliveryType" value="entrega">
+              Entrega
+            </label>
+            <label>
+              <input type="radio" name="deliveryType" value="retirada">
+              Retirada
+            </label>
+          </div>
+
+          <div class="delivery-fields" id="delivery-entrega-fields">
+            <input
+              type="text"
+              id="delivery-name-entrega"
+              class="delivery-input"
+              placeholder="Seu nome"
+            />
+            <input
+              type="text"
+              id="delivery-address"
+              class="delivery-input"
+              placeholder="Endereço completo para entrega"
+            />
+            <p class="delivery-note">
+              O valor da entrega será informado após a realização do pedido.
+            </p>
+          </div>
+
+          <div class="delivery-fields" id="delivery-retirada-fields">
+            <input
+              type="text"
+              id="delivery-name-retirada"
+              class="delivery-input"
+              placeholder="Seu nome"
+            />
+            <button type="button" id="open-map-button" class="map-button">
+              Abrir mapa da loja
+            </button>
+            <p class="store-address">
+              Caminho 32, Casa 14, Vida Nova - Lauro de Freitas
+            </p>
+          </div>
+        </div>
+
+        <div class="payment-options">
+          <span class="payment-label">Forma de pagamento</span>
+          <div class="payment-type">
+            <label>
+              <input type="radio" name="paymentType" value="Pix">
+              Pix
+            </label>
+            <label>
+              <input type="radio" name="paymentType" value="Dinheiro">
+              Dinheiro
+            </label>
+            <label>
+              <input type="radio" name="paymentType" value="Cartão">
+              Cartão
+            </label>
+          </div>
+        </div>
+
+        <button id="cart-drawer-whatsapp" type="button" class="cart-drawer-whatsapp" disabled>
+          Finalizar no WhatsApp
+        </button>
+      </footer>
     </div>
   </div>
 
-  <div id="cart-modal" class="modal">
-    <div class="modal-content">
-      <span class="close-modal">&times;</span>
-      <h2>Seu Carrinho</h2>
-      <div id="cart-items"></div>
-      <div class="cart-summary">
-        <p>Total: <span id="cart-total">R$ 0,00</span></p>
-        <button id="checkout-btn">Finalizar Pedido</button>
-      </div>
-    </div>
-  </div>
-
-  <header class="header">
-    <div class="header-container">
-      <h1>Dogão do Canela Fina</h1>
-      <div class="hamburger-menu">
-        <div class="hamburger-line"></div>
-        <div class="hamburger-line"></div>
-        <div class="hamburger-line"></div>
-      </div>
-      <nav>
-        <a href="#menu"><i class="fas fa-utensils"></i> Cardápio</a>
-        <a href="#contato"><i class="fas fa-phone"></i> Contato</a>
-        <a href="#" id="cart-link"><i class="fas fa-shopping-cart"></i> Carrinho <span id="cart-count">0</span></a>
-      </nav>
-  </header>
-
-  <section class="hero">
-    <div class="hero-content">
-      <h2>O Melhor Cachorro-Quente da Região!</h2>
-      <p class="hero-subtitle">Sabor e qualidade que fazem a diferença</p>
-      <div class="hero-dog"><img src="logo.webp"></div>
-      <a href="#menu" class="cta-button">Ver Cardápio</a>
-    </div>
-  </section>
-
-  <section id="promocoes" class="promo-section">
-    <h2>Promoções Especiais</h2>
-    <div class="promo-grid" id="promo-grid">
-      <!-- Combos will be dynamically populated here -->
-    </div>
-  </section>
-
-  <section id="menu" class="menu-section">
-    <h2>Dogões Especiais</h2>
-    <div class="menu-grid">
-      <div class="menu-item" aria-label="Hot-Dog Clássico">
-        <div class="item-icon hotdog" role="img" aria-label="Ícone de Hot-Dog">
-          <img src="image_fx_.jpg" alt="">
-        </div>
-        <h3>Hot-Dog Clássico</h3>
-        <p>Pão, salsicha, crisp, molho especial, molho vermelho, molho fumaça, queijo ralado</p>
-        <span class="price">R$ 6,90</span>
-        <button class="add-to-cart" aria-label="Adicionar Hot-Dog Clássico ao carrinho">Adicionar</button>
-      </div>
-
-      <div class="menu-item" aria-label="Dogão Especial">
-        <div class="item-icon dogao" role="img" aria-label="Ícone de Dogão">
-          <img src="dogaoespecial.jpg" alt="">
-        </div>
-        <h3>Dogão Tradicional</h3>
-        <p>Pão, 2 salsichas, crisp, barbecue, cheddar, molho vermelo, molho especial.</p>
-        <span class="price">R$ 16,90</span>
-        <button class="add-to-cart" aria-label="Adicionar Dogão Especial ao carrinho">Adicionar</button>
-      </div>
-
-      <div class="menu-item" aria-label="Dogão de Bovino">
-        <div class="item-icon dogao" role="img" aria-label="Ícone de Dogão de Carne">
-          <img src="dogaocarne.jpg" alt="">
-        </div>
-        <h3>Dogão de Bovino</h3>
-        <p>Pão, 1 salsicha de carne, crisp, barbecue, cheddar, molho vermelo, molho especial</p>
-        <span class="price">R$ 21,90</span>
-        <button class="add-to-cart" aria-label="Adicionar Dogão de Bovino ao carrinho">Adicionar</button>
-      </div>
-
-      <div class="menu-item" aria-label="Dogão de Frango">
-        <div class="item-icon dogao" role="img" aria-label="Ícone de Dogão de Carne">
-          <img src="dogaofrango.jpg" alt="">
-        </div>
-        <h3>Dogão de Frango</h3>
-        <p>Pão, 1 salsicha de frango, crisp, barbecue, cheddar, molho vermelo, molho especial</p>
-        <span class="price">R$ 21,90</span>
-        <button class="add-to-cart" aria-label="Adicionar Dogão de Frango ao carrinho">Adicionar</button>
-      </div>
-    </div>
-    <div class="menu-grid-1">
-      <div class="menu-item" aria-label="Batata Chips">
-        <div class="item-icon fries" role="img" aria-label="Ícone de Batata Chips">
-          <img src="chips.jpg" alt="">
-        </div>
-        <h3>Batata Chips</h3>
-        <p>Chips de verdade!</p>
-        <span class="price">R$ 12,90</span>
-        <button class="add-to-cart" aria-label="Adicionar Batata Chips ao carrinho">Adicionar</button>
-      </div>
-      <div class="menu-item" aria-label="Batata Suprema">
-        <div class="item-icon fries" role="img" aria-label="Ícone de Batata">
-          <img src="batata-frita.jpg" alt="">
-        </div>
-        <h3>Batata Suprema</h3>
-        <p>Batata frita crocante</p>
-        <span class="price">R$ 12,90</span>
-        <button class="add-to-cart" aria-label="Adicionar Batata Suprema ao carrinho">Adicionar</button>
-      </div>
-    </div>
-  </section>
-
-  <section class="drinks-section">
-    <h2>Bebidas</h2>
-    <div class="drinks-grid">
-      <div class="drink-category">
-        <h3>Refrigerantes</h3>
-        <div class="drink-list">
-          <div class="drink-item">
-            <div class="drink-icon soda" role="img" aria-label="Ícone de Refrigerante">
-              <img src="coca lata.webp" alt="">
-            </div>
-            <span>Coca Cola Lata</span>
-            <span class="price">R$ 7,90</span>
-            <button class="add-to-cart" aria-label="Adicionar Coca-Cola Lata ao carrinho">Adicionar</button>
-          </div>
-          <div class="drink-item">
-            <div class="drink-icon soda" role="img" aria-label="Ícone de Refrigerante Zero">
-              <img src="coca cola zero.webp" alt="">
-            </div>
-            <span>Coca Cola Lata Zero</span>
-            <span class="price">R$ 7,90</span>
-            <button class="add-to-cart" aria-label="Adicionar Coca-Cola Zero ao carrinho">Adicionar</button>
-          </div>
-          <div class="drink-item">
-            <div class="drink-icon soda" role="img" aria-label="Ícone de Refrigerante Zero">
-              <img src="guaranalata.png" alt="">
-            </div>
-            <span>Guarana Lata</span>
-            <span class="price">R$ 7,90</span>
-            <button class="add-to-cart" aria-label="Adicionar Coca-Cola Zero ao carrinho">Adicionar</button>
-          </div>
-          <div class="drink-item">
-            <div class="drink-icon soda" role="img" aria-label="Ícone de Refrigerante Zero">
-              <img src="pepsi.png" alt="">
-            </div>
-            <span>Pepsi Lata</span>
-            <span class="price">R$ 7,90</span>
-            <button class="add-to-cart" aria-label="Adicionar Coca-Cola Zero ao carrinho">Adicionar</button>
-          </div>
-        </div>
-      </div>
-      <div class="drink-category" style="display: none;">
-        <h3>Cerveja</h3>
-        <div class="drink-list">
-          <!-- Beer items will be added here later -->
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Customer Details Modal -->
-  <div id="customer-details-modal" class="modal">
-    <div class="customer-details-content">
-      <span class="close-modal">&times;</span>
-      <h2>Informações para Entrega</h2>
-      <button id="fill-previous-data" class="fill-previous-button">Preencher Dados Anteriores</button>
-      <form id="customer-details-form" class="customer-details-form">
-        <input type="text" id="customer-name" placeholder="Nome Completo" required>
-        <input type="tel" id="customer-phone" placeholder="Telefone (WhatsApp)" required>
-        <textarea id="customer-address" placeholder="Endereço Completo para Entrega" required></textarea>
-        <p><strong>Nota:</strong> A taxa de entrega varia de acordo com a localização.</p>
-        <button type="submit">Finalizar Pedido</button>
-      </form>
-    </div>
-  </div>
-
-  <footer id="contato" class="footer">
-    <div class="footer-content">
-      <div class="footer-column">
-        <h4>Endereço</h4>
-        <p>Caminho 32, 14<br>Vida Nova - Lauro de Freitas/BA</p>
-      </div>
-      <div class="footer-column">
-        <h4>Horário</h4>
-        <p>Terça a Domingo: 18:00 - 23:00</p>
-      </div>
-      <div class="footer-column">
-        <h4>Quer fazer seu pedido?</h4>
-        <div class="social-icons">
-          <a target="_blank" href="http://wa.me/5571996447078" aria-label="WhatsApp"><i class="fab fa-whatsapp"></i></a>
-        </div>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p>&copy; 2025 Dogão do Canela Fina. Todos os direitos reservados.</p>
-    </div>
-  </footer>
-  <script src="script.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
