@@ -1,5 +1,5 @@
 //// Número do WhatsApp no formato internacional, ex: 55 + DDD + número
-const WHATSAPP_NUMBER = '5571996447078';
+const WHATSAPP_NUMBER = '5588999999999';
 // URL do mapa da loja (Google Maps ou similar)
 const STORE_MAP_URL = 'https://www.google.com/maps/search/?api=1&query=Dog%C3%A3o+do+Canela+Fina';
 
@@ -204,6 +204,11 @@ function buildWhatsappMessage(details) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+    // === MODO NATAL (ATIVADO) ===
+    // Para DESATIVAR o modo Natal, basta comentar ou remover a linha abaixo:
+    // document.body.classList.add('natal-mode');
+    document.body.classList.add('natal-mode');
+
     // Clique nos botões de adicionar dos cards dos lanches
     document.querySelectorAll('.card[data-product-id]').forEach(card => {
         const id = card.getAttribute('data-product-id');
