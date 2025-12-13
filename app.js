@@ -1,5 +1,5 @@
 //// Número do WhatsApp no formato internacional, ex: 55 + DDD + número
-const WHATSAPP_NUMBER = '5588999999999';
+const WHATSAPP_NUMBER = '5571999391758';
 // URL do mapa da loja (Google Maps ou similar)
 const STORE_MAP_URL = 'https://www.google.com/maps/search/?api=1&query=Dog%C3%A3o+do+Canela+Fina';
 
