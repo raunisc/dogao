@@ -204,9 +204,7 @@ function buildWhatsappMessage(details) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-    // === MODO NATAL (ATIVADO) ===
-    // Para DESATIVAR o modo Natal, basta comentar ou remover a linha abaixo:
-    // document.body.classList.add('natal-mode');
+    // Ativa modo Natal (partículas de gelo e visual natalino)
     document.body.classList.add('natal-mode');
 
     // Clique nos botões de adicionar dos cards dos lanches
