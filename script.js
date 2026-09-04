@@ -1,729 +1,746 @@
-class InlineCartManager {
-  constructor(orderManager) {
-    this.orderManager = orderManager;
-    this.inlineCart = document.getElementById('inline-cart');
-    this.inlineCartItems = document.getElementById('inline-cart-items');
-    this.inlineCartCount = document.getElementById('inline-cart-count');
-    this.inlineCartTotal = document.getElementById('inline-cart-total');
-    this.clearCartButton = document.getElementById('inline-cart-clear');
-    this.checkoutButton = document.getElementById('inline-cart-checkout');
+// Menu data
+const menuData = {
+    burgers: [
+        {
+            id: 1,
+            name: "Burger do Goku",
+            price: 19.90,
+            description: "1 Carne de burger bovino artesanal, Mussarela, Cebola Crisp e Molho Super."
+        },
+        {
+            id: 2,
+            name: "Burger do Vegeta",
+            price: 19.90,
+            description: "1 Carne de burger bovino artesanal, Cheddar, Cebola Crisp e Molho Fumaça."
+        },
+        {
+            id: 3,
+            name: "Burger do Naruto",
+            price: 16.90,
+            description: "1 Carne de burger bovino artesanal, Cheddar e Molho Super."
+        },
+        {
+            id: 4,
+            name: "Burger do Sasuke",
+            price: 16.90,
+            description: "1 Carne de burger bovino artesanal, Mussarela e Molho Fumaça."
+        },
+        {
+            id: 5,
+            name: "Burger do Goku SSJ 2",
+            price: 26.90,
+            description: "2 Carnes de burger bovino artesanal, Mussarela, Cebola Crisp e Molho Super."
+        },
+        {
+            id: 6,
+            name: "Burger do Vegeta SSJ 2",
+            price: 26.90,
+            description: "2 Carnes de burger bovino artesanal, Cheddar, Cebola Crisp e Molho Fumaça."
+        },
+        {
+            id: 7,
+            name: "Burger do Naruto Sábio",
+            price: 21.90,
+            description: "2 Carnes de burger bovino artesanal, Cheddar e Molho Super."
+        },
+        {
+            id: 8,
+            name: "Burger do Sasuke Susanoo",
+            price: 21.90,
+            description: "2 Carnes de burger bovino artesanal, Mussarela e Molho Fumaça."
+        }
+    ],
+    sides: [
+        {
+            id: 9,
+            name: "Batata Sayajins",
+            price: 8.90,
+            description: "Batata palito fritas e crocantes"
+        },
+        {
+            id: 10,
+            name: "Chips do Poder",
+            price: 8.90,
+            description: "Batata chips crocantes e deliciosas"
+        }
+    ],
+    drinks: [
+        {
+            id: 11,
+            name: "Coca Cola Lata",
+            price: 5.90,
+            description: "Refrigerante gelado 350ml"
+        },
+        {
+            id: 12,
+            name: "Guaraná Lata",
+            price: 5.90,
+            description: "Refrigerante gelado 350ml"
+        },
+        {
+            id: 13,
+            name: "Água C/Gás",
+            price: 3.90,
+            description: "Água mineral com gás 500ml"
+        }
+    ]
+};
 
-    this.setupEventListeners();
-  }
+// Cart state
+let cart = [];
+let isCartOpen = false;
+let isAIOpen = false;
 
-  setupEventListeners() {
-    this.clearCartButton.addEventListener('click', () => {
-      this.orderManager.clearCart();
-    });
+// Predefined combos
+const combos = {
+    sayajin: [
+        { id: 5, name: "Burger do Goku SSJ 2", price: 26.90 },
+        { id: 9, name: "Batata Sayajins", price: 8.90 },
+        { id: 11, name: "Coca Cola Lata", price: 5.90 }
+    ],
+    ninja: [
+        { id: 7, name: "Burger do Naruto Sábio", price: 21.90 },
+        { id: 10, name: "Chips do Poder", price: 8.90 },
+        { id: 12, name: "Guaraná Lata", price: 5.90 }
+    ],
+    principe: [
+        { id: 2, name: "Burger do Vegeta", price: 19.90 },
+        { id: 9, name: "Batata Sayajins", price: 8.90 },
+        { id: 13, name: "Água C/Gás", price: 3.90 }
+    ]
+};
 
-    this.checkoutButton.addEventListener('click', () => {
-      this.orderManager.generateWhatsAppMessage();
-    });
-  }
+// Initialize the app
+document.addEventListener('DOMContentLoaded', function() {
+    renderMenu();
+    setupEventListeners();
+    initializeAI();
+});
 
-  updateCart(cart) {
-    this.inlineCartItems.innerHTML = '';
-    let total = 0;
+// AI initialization with welcome message
+function initializeAI() {
+    setTimeout(() => {
+        addMessageToChat('🐉 Olá! Sou Shenron, seu assistente virtual do Burger e Otakus!\n\nPosso te ajudar a:\n🍔 Escolher o burger perfeito\n🎯 Sugerir combos personalizados\n🛒 Adicionar itens ao carrinho\n📋 Finalizar seu pedido\n\nO que você gostaria de fazer?', 'ai', ['Ver Menu Completo', 'Sugestões Populares', 'Montar Combo']);
+    }, 1000);
+}
 
-    cart.forEach((item, index) => {
-      const priceValue = parseFloat(item.price.replace('R$ ', '').replace(',', '.'));
-      total += priceValue;
+// Render menu items
+function renderMenu() {
+    renderMenuSection('burgers', menuData.burgers);
+    renderMenuSection('sides', menuData.sides);
+    renderMenuSection('drinks', menuData.drinks);
+}
 
-      const cartItemEl = document.createElement('div');
-      cartItemEl.classList.add('inline-cart-item');
-      cartItemEl.innerHTML = `
-        <span>${item.name}</span>
-        <div class="inline-cart-item-actions">
-          <span>${item.price}</span>
-          <button class="remove-inline-cart-item" data-index="${index}">
-            <i class="fas fa-trash"></i>
-          </button>
+function renderMenuSection(sectionId, items) {
+    const container = document.getElementById(sectionId);
+    container.innerHTML = items.map(item => `
+        <div class="menu-item" data-item-id="${item.id}">
+            <div class="item-header">
+                <h4 class="item-name">${item.name}</h4>
+                <span class="item-price">R$ ${item.price.toFixed(2).replace('.', ',')}</span>
+            </div>
+            <p class="item-description">${item.description}</p>
+            <button class="add-to-cart" onclick="addToCart(${item.id})">
+                <i class="fas fa-plus"></i> Adicionar ao Carrinho
+            </button>
         </div>
-      `;
+    `).join('');
+}
 
-      const removeButton = cartItemEl.querySelector('.remove-inline-cart-item');
-      removeButton.addEventListener('click', () => {
-        this.orderManager.removeFromCart(index);
-      });
+// Cart functions
+function addToCart(itemId) {
+    const item = findItemById(itemId);
+    if (!item) return;
 
-      this.inlineCartItems.appendChild(cartItemEl);
-    });
-
-    this.inlineCartCount.textContent = `${cart.length} itens`;
-    this.inlineCartTotal.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
-
-    if (cart.length > 0) {
-      this.inlineCart.classList.add('active');
+    const existingItem = cart.find(cartItem => cartItem.id === itemId);
+    
+    if (existingItem) {
+        existingItem.quantity += 1;
     } else {
-      this.inlineCart.classList.remove('active');
+        cart.push({
+            ...item,
+            quantity: 1
+        });
     }
-  }
+    
+    updateCartUI();
+    animateCartIcon();
+    
+    // Notify AI if it's open
+    if (isAIOpen) {
+        addMessageToChat(`✅ ${item.name} adicionado ao carrinho! Seu pedido está crescendo! 🛒`, 'ai', ['Ver Carrinho', 'Continuar Comprando', 'Finalizar Pedido']);
+    }
 }
 
-class PromoManager {
-  constructor() {
-    this.combos = [
-      {
-        id: 'segunda-combo',
-        name: 'Combo Segunda-Feira',
-        description: 'Hot-Dog Clássico + Batata + Refrigerante com desconto',
-        originalPrices: [
-          { item: 'Hot-Dog Clássico', price: 4.90 },
-          { item: 'Batata Suprema', price: 11.90 },
-          { item: 'Coca-Cola', price: 8.00 }
-        ],
-        comboPrice: 29.90,
-        availableDays: [1], // Monday
-        items: ['Hot-Dog Clássico', 'Batata Suprema', 'Coca-Cola 600ml']
-      },
-      {
-        id: 'terca-combo',
-        name: 'Combo Terça Mega',
-        description: 'Dogão Especial + Batata + Cerveja',
-        originalPrices: [
-          { item: 'Dogão Especial', price: 15.00 },
-          { item: 'Batata Suprema', price: 18.90 },
-          { item: 'Heineken Long Neck', price: 10.00 }
-        ],
-        comboPrice: 39.90,
-        availableDays: [2], // Tuesday
-        items: ['Dogão Especial', 'Batata Suprema', 'Heineken Long Neck']
-      },
-      {
-        id: 'quarta-combo',
-        name: 'Combo Quarta no Balde',
-        description: '2 Hot-Dogs + 2 Batatas + 2 Refrigerantes',
-        originalPrices: [
-          { item: '2x Hot-Dog Clássico', price: 2 * 12.90 },
-          { item: '2x Batata Suprema', price: 2 * 18.90 },
-          { item: '2x Coca-Cola 600ml', price: 2 * 8.00 }
-        ],
-        comboPrice: 49.90,
-        availableDays: [3], // Wednesday
-        items: ['2x Hot-Dog Clássico', '2x Batata Suprema', '2x Coca-Cola 600ml']
-      },
-      {
-        id: 'quinta-combo',
-        name: 'Combo Quinta Especial',
-        description: 'Hot-Dog Especial + Cerveja + Batata',
-        originalPrices: [
-          { item: 'Hot-Dog Especial', price: 13.90 },
-          { item: 'Heineken Long Neck', price: 10.00 },
-          { item: 'Batata Suprema', price: 18.90 }
-        ],
-        comboPrice: 44.90,
-        availableDays: [4], // Thursday
-        items: ['Hot-Dog Especial', 'Heineken Long Neck', 'Batata Suprema']
-      },
-      {
-        id: 'canela-fina',
-        name: 'Combo Canela Fina',
-        description: 'Hot-Dog Especial + Batata + Refrigerante',
-        originalPrices: [
-          { item: 'Hot-Dog Especial', price: 13.90 },
-          { item: 'Batata Suprema', price: 18.90 },
-          { item: 'Coca-Cola 600ml', price: 8.00 }
-        ],
-        comboPrice: 34.90,
-        availableDays: [5, 6], // Friday and Saturday
-        items: ['Hot-Dog Especial', 'Batata Suprema', 'Coca-Cola 600ml']
-      },
-      {
-        id: 'domingo-combo',
-        name: 'Combo Domingo Família',
-        description: '3 Hot-Dogs + 2 Batatas + 2 Refrigerantes',
-        originalPrices: [
-          { item: '3x Hot-Dog Clássico', price: 3 * 12.90 },
-          { item: '2x Batata Suprema', price: 2 * 18.90 },
-          { item: '2x Coca-Cola 600ml', price: 2 * 8.00 }
-        ],
-        comboPrice: 59.90,
-        availableDays: [0], // Sunday
-        items: ['3x Hot-Dog Clássico', '2x Batata Suprema', '2x Coca-Cola 600ml']
-      }
-    ];
-
-    this.renderCombos();
-  }
-
-  calculateSavings(combo) {
-    const originalTotal = combo.originalPrices.reduce((sum, item) => sum + item.price, 0);
-    const savings = originalTotal - combo.comboPrice;
-    return {
-      originalTotal: originalTotal.toFixed(2),
-      savings: savings.toFixed(2)
-    };
-  }
-
-  renderCombos() {
-    const promoGrid = document.getElementById('promo-grid');
-    promoGrid.innerHTML = ''; // Clear existing combos
-
-    const currentDate = this.getCurrentDate();
+function removeFromCart(itemId) {
+    const item = cart.find(cartItem => cartItem.id === itemId);
+    cart = cart.filter(cartItem => cartItem.id !== itemId);
+    updateCartUI();
     
-    this.combos.forEach(combo => {
-      if (this.isComboAvailable(combo, currentDate)) {
-        const { originalTotal, savings } = this.calculateSavings(combo);
-        
-        const comboCard = document.createElement('div');
-        comboCard.classList.add('promo-card');
-        
-        const originalPricesHtml = combo.originalPrices.map(item => 
-          `<span class="original-price">${item.item}: R$ ${item.price.toFixed(2)}</span>`
-        ).join('');
-        
-        // Calculate discount percentage
-        const discountPercentage = ((savings / parseFloat(originalTotal)) * 100).toFixed(0);
-        
-        comboCard.innerHTML = `
-          <h3>${combo.name}</h3>
-          <p>${combo.description}</p>
-          
-          <div class="original-prices">
-            ${originalPricesHtml}
-          </div>
-          
-          <div class="promo-savings">
-            Economize: R$ ${savings}
-          </div>
-          
-          <span class="promo-price">Combo por: R$ ${combo.comboPrice.toFixed(2)}</span>
-          
-          ${discountPercentage > 0 ? 
-            `<span class="promo-discount">${discountPercentage}% OFF</span>` : 
-            ''
-          }
-        `;
-
-        const addPromoButton = document.createElement('button');
-        addPromoButton.textContent = 'Adicionar Combo';
-        addPromoButton.classList.add('add-promo-to-cart', 'add-to-cart');
-        
-        addPromoButton.addEventListener('click', () => {
-          const orderManager = window.orderManager;
-          if (orderManager) {
-            orderManager.addToCart({ 
-              name: combo.name, 
-              price: `R$ ${combo.comboPrice.toFixed(2)}`,
-              isPromo: true,
-              items: combo.items,
-              originalTotal: `R$ ${originalTotal}`
-            });
-          } else {
-            console.error('Order Manager not initialized');
-            this.showInitializationError();
-          }
-        });
-
-        comboCard.appendChild(addPromoButton);
-        promoGrid.appendChild(comboCard);
-      }
-    });
-
-    if (promoGrid.children.length === 0) {
-      const noComboMessage = document.createElement('p');
-      noComboMessage.textContent = 'Nenhuma promoção disponível hoje.';
-      noComboMessage.style.textAlign = 'center';
-      noComboMessage.style.width = '100%';
-      promoGrid.appendChild(noComboMessage);
+    // Notify AI if it's open
+    if (isAIOpen && item) {
+        addMessageToChat(`❌ ${item.name} removido do carrinho.`, 'ai');
     }
-  }
-
-  showInitializationError() {
-    const modal = document.createElement('div');
-    modal.style.position = 'fixed';
-    modal.style.top = '0';
-    modal.style.left = '0';
-    modal.style.width = '100%';
-    modal.style.height = '100%';
-    modal.style.backgroundColor = 'rgba(0,0,0,0.7)';
-    modal.style.display = 'flex';
-    modal.style.justifyContent = 'center';
-    modal.style.alignItems = 'center';
-    modal.style.zIndex = '1000';
-
-    const errorContent = document.createElement('div');
-    errorContent.style.backgroundColor = 'white';
-    errorContent.style.padding = '2rem';
-    errorContent.style.borderRadius = '10px';
-    errorContent.innerHTML = `
-      <h2>Erro de Inicialização</h2>
-      <p>Ocorreu um erro ao carregar o sistema de pedidos.</p>
-      <button onclick="window.location.reload()">Recarregar Página</button>
-    `;
-
-    modal.appendChild(errorContent);
-    document.body.appendChild(modal);
-  }
-
-  getCurrentDate() {
-    try {
-      const now = new Date();
-      
-      if (this.isDateManipulated(now)) {
-        throw new Error('Data inválida detectada');
-      }
-      
-      return now;
-    } catch (error) {
-      console.error('Erro ao obter data:', error);
-      alert('Não foi possível verificar a data das promoções.');
-      return null;
-    }
-  }
-
-  isDateManipulated(date) {
-    const systemTime = Date.now();
-    const providedTime = date.getTime();
-    
-    const timeDiff = Math.abs(systemTime - providedTime);
-    const MAX_TIME_DEVIATION = 60000; // 1 minute allowance
-    
-    return (
-      timeDiff > MAX_TIME_DEVIATION || 
-      date.getFullYear() < 2023 || 
-      date.getFullYear() > 2025
-    );
-  }
-
-  isComboAvailable(combo, currentDate) {
-    try {
-      if (!combo || !currentDate) {
-        return false;
-      }
-
-      const currentDay = currentDate.getDay();
-      const isAvailable = combo.availableDays.includes(currentDay);
-
-      return isAvailable;
-    } catch (error) {
-      console.error('Erro ao verificar disponibilidade do combo:', error);
-      return false;
-    }
-  }
 }
 
-class OrderManager {
-  constructor() {
-    this.initializeWithSafety();
-    this.inlineCartManager = new InlineCartManager(this);
-  }
-
-  initializeWithSafety() {
-    try {
-      this.cart = [];
-      this.initializeAddToCartButtons();
-      this.setupScrollHandlers();
-      this.setupFloatAnimation();
-      this.setupCartModal();
-      window.orderManager = this;
-      this.promoManager = new PromoManager();
-    } catch (error) {
-      console.error('Falha na inicialização:', error);
-      this.showInitializationError();
-    }
-  }
-
-  generateWhatsAppMessage() {
-    try {
-      if (this.cart.length === 0) {
-        throw new Error('Carrinho vazio');
-      }
-
-      const customerDetailsModal = document.getElementById('customer-details-modal');
-      const closeModal = customerDetailsModal.querySelector('.close-modal');
-      const customerForm = document.getElementById('customer-details-form');
-      const fillPreviousButton = document.getElementById('fill-previous-data');
-
-      const previousData = this.getPreviousCustomerData();
-
-      if (previousData) {
-        fillPreviousButton.style.display = 'block';
-        fillPreviousButton.addEventListener('click', () => {
-          document.getElementById('customer-name').value = previousData.name;
-          document.getElementById('customer-phone').value = previousData.phone;
-          document.getElementById('customer-address').value = previousData.address;
-        });
-      } else {
-        fillPreviousButton.style.display = 'none';
-      }
-
-      customerDetailsModal.style.display = 'block';
-
-      const closeCustomerDetailsModal = () => {
-        customerDetailsModal.style.display = 'none';
-      };
-
-      closeModal.addEventListener('click', closeCustomerDetailsModal);
-
-      customerDetailsModal.addEventListener('click', (e) => {
-        if (e.target === customerDetailsModal) {
-          closeCustomerDetailsModal();
-        }
-      });
-
-      customerForm.onsubmit = (e) => {
-        e.preventDefault();
-
-        const customerName = document.getElementById('customer-name').value;
-        const customerPhone = document.getElementById('customer-phone').value;
-        const customerAddress = document.getElementById('customer-address').value;
-
-        this.saveCustomerData(customerName, customerPhone, customerAddress);
-
-        let message = "*Pedido do Dogão do Canela Fina*\n\n";
-        message += `*Nome:* ${customerName}\n`;
-        message += `*Telefone:* ${customerPhone}\n`;
-        message += `*Endereço:* ${customerAddress}\n\n`;
-        message += "*Itens do Pedido:*\n";
-
-        let total = 0;
-        let itemCount = {};
-
-        this.cart.forEach((item) => {
-          const priceValue = parseFloat(item.price.replace('R$ ', '').replace(',', '.'));
-          
-          itemCount[item.name] = (itemCount[item.name] || 0) + 1;
-          
-          total += priceValue;
-        });
-
-        Object.entries(itemCount).forEach(([name, count]) => {
-          message += `${count}x ${name}\n`;
-        });
-
-        message += "\n*Observação:* Taxa de entrega será calculada conforme endereço.\n";
-        message += `*Total:* R$ ${total.toFixed(2).replace('.', ',')}`;
-
-        const encodedMessage = encodeURIComponent(message);
-        const phoneNumber = '5571996447078'; 
-        const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodedMessage}`;
-        
-        window.open(whatsappUrl, '_blank');
-
-        this.cart = [];
-        this.updateCartDisplay();
-        document.getElementById('cart-modal').style.display = 'none';
-        customerDetailsModal.style.display = 'none';
-        customerForm.reset();
-        
-        // Refresh the page to clear the cart
-        window.location.reload();
-      };
-    } catch (error) {
-      console.error('Erro no checkout:', error);
-      alert(error.message || 'Não foi possível finalizar o pedido.');
-    }
-  }
-
-  saveCustomerData(name, phone, address) {
-    const customerData = {
-      name: name,
-      phone: phone,
-      address: address
-    };
-    localStorage.setItem('customerData', JSON.stringify(customerData));
-  }
-
-  getPreviousCustomerData() {
-    const storedData = localStorage.getItem('customerData');
-    return storedData ? JSON.parse(storedData) : null;
-  }
-
-  initializeAddToCartButtons() {
-    const addToCartButtons = document.querySelectorAll('.add-to-cart');
-    addToCartButtons.forEach(button => {
-      button.addEventListener('click', (e) => {
-        const item = e.target.closest('.menu-item, .drink-item');
-        const name = item.querySelector('h3, span').textContent;
-        let priceElement = item.querySelector('.price');
-        const price = priceElement.textContent;
-        this.addToCart({ name, price });
-      });
-    });
-  }
-
-  addToCart(item) {
-    try {
-      if (!item.name || !item.price) {
-        throw new Error('Item inválido');
-      }
-
-      if (this.cart.length >= 10) {
-        alert('Limite máximo do carrinho atingido.');
+function updateQuantity(itemId, newQuantity) {
+    if (newQuantity <= 0) {
+        removeFromCart(itemId);
         return;
-      }
-
-      console.log('Adding to cart:', item);
-
-      this.cart.push(item);
-      this.updateCartDisplay();
-      this.inlineCartManager.updateCart(this.cart);
-    } catch (error) {
-      console.error('Erro ao adicionar item:', error);
-      alert('Não foi possível adicionar o item ao carrinho. Tente novamente.');
     }
-  }
-
-  clearCart() {
-    this.cart = [];
-    this.updateCartDisplay();
-    this.inlineCartManager.updateCart(this.cart);
     
-    document.getElementById('cart-count').textContent = '0';
-  }
-
-  removeFromCart(index) {
-    this.cart.splice(index, 1);
-    this.updateCartDisplay();
-    this.inlineCartManager.updateCart(this.cart);
-  }
-
-  updateCartDisplay() {
-    const cartCount = document.getElementById('cart-count');
-    const cartItems = document.getElementById('cart-items');
-    const cartTotal = document.getElementById('cart-total');
-
-    if (!cartCount || !cartItems || !cartTotal) {
-      console.error('Elementos do carrinho não encontrados');
-      this.showInitializationError();
-      return;
+    const item = cart.find(cartItem => cartItem.id === itemId);
+    if (item) {
+        item.quantity = newQuantity;
+        updateCartUI();
     }
-
-    cartCount.textContent = this.cart.length;
-    
-    cartItems.innerHTML = '';
-
-    let total = 0;
-    this.cart.forEach((item, index) => {
-      const priceValue = parseFloat(item.price.replace('R$ ', '').replace(',', '.'));
-      total += priceValue;
-
-      const cartItemEl = document.createElement('div');
-      cartItemEl.classList.add('cart-item');
-      
-      if (item.isPromo) {
-        cartItemEl.classList.add('promo-cart-item');
-        cartItemEl.innerHTML = `
-          <span>${item.name}</span>
-          <div>
-            <span style="text-decoration: line-through; color: #888; margin-right: 10px;">${item.originalTotal}</span>
-            <span style="color: var(--red); font-weight: bold;">${item.price}</span>
-          </div>
-          <button class="remove-item" data-index="${index}">Remover</button>
-        `;
-      } else {
-        cartItemEl.innerHTML = `
-          <span>${item.name}</span>
-          <span>${item.price}</span>
-          <button class="remove-item" data-index="${index}">Remover</button>
-        `;
-      }
-      
-      cartItems.appendChild(cartItemEl);
-    });
-
-    cartTotal.textContent = `R$ ${total.toFixed(2).replace('.', ',')}`;
-
-    const removeButtons = cartItems.querySelectorAll('.remove-item');
-    removeButtons.forEach(button => {
-      button.addEventListener('click', (e) => {
-        const index = e.target.getAttribute('data-index');
-        this.cart.splice(index, 1);
-        this.updateCartDisplay();
-        this.inlineCartManager.updateCart(this.cart);
-      });
-    });
-  }
-
-  setupScrollHandlers() {
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-      anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        
-        try {
-          const targetSelector = this.getAttribute('href');
-          
-          if (targetSelector && targetSelector.startsWith('#')) {
-            const targetElement = document.querySelector(targetSelector);
-            
-            if (targetElement) {
-              targetElement.scrollIntoView({
-                behavior: 'smooth'
-              });
-            } else {
-              console.warn(`Target element ${targetSelector} not found`);
-            }
-          }
-        } catch (error) {
-          console.error('Error in scroll handler:', error);
-        }
-      });
-    });
-  }
-
-  setupFloatAnimation() {
-    const floatItems = document.querySelectorAll('.menu-item, .drink-item');
-    floatItems.forEach(item => {
-      item.style.transition = 'transform 0.3s ease';
-      item.addEventListener('mouseover', () => {
-        item.style.transform = 'translateY(-5px)';
-      });
-      item.addEventListener('mouseout', () => {
-        item.style.transform = 'translateY(0)';
-      });
-    });
-  }
-
-  setupCartModal() {
-    const cartLink = document.getElementById('cart-link');
-    const cartModal = document.getElementById('cart-modal');
-    const closeModal = document.querySelector('.close-modal');
-    const checkoutBtn = document.getElementById('checkout-btn');
-
-    cartLink.addEventListener('click', (e) => {
-      e.preventDefault();
-      cartModal.style.display = 'block';
-    });
-
-    closeModal.addEventListener('click', () => {
-      cartModal.style.display = 'none';
-    });
-
-    checkoutBtn.addEventListener('click', () => {
-      this.generateWhatsAppMessage();
-    });
-
-    window.addEventListener('click', (e) => {
-      if (e.target === cartModal) {
-        cartModal.style.display = 'none';
-      }
-    });
-  }
-
-  showInitializationError() {
-    const modal = document.createElement('div');
-    modal.style.position = 'fixed';
-    modal.style.top = '0';
-    modal.style.left = '0';
-    modal.style.width = '100%';
-    modal.style.height = '100%';
-    modal.style.backgroundColor = 'rgba(0,0,0,0.7)';
-    modal.style.display = 'flex';
-    modal.style.justifyContent = 'center';
-    modal.style.alignItems = 'center';
-    modal.style.zIndex = '1000';
-
-    const errorContent = document.createElement('div');
-    errorContent.style.backgroundColor = 'white';
-    errorContent.style.padding = '2rem';
-    errorContent.style.borderRadius = '10px';
-    errorContent.innerHTML = `
-      <h2>Erro de Inicialização</h2>
-      <p>Ocorreu um erro ao carregar o sistema de pedidos.</p>
-      <button onclick="window.location.reload()">Recarregar Página</button>
-    `;
-
-    modal.appendChild(errorContent);
-    document.body.appendChild(modal);
-  }
 }
 
-window.addEventListener('error', (event) => {
-  console.error('Unhandled error:', event.error);
-  alert('Ocorreu um erro inesperado. Por favor, recarregue a página.');
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-  try {
-    const hamburgerMenu = document.querySelector('.hamburger-menu');
-    const nav = document.querySelector('nav');
-    const operatingHoursModal = document.getElementById('operating-hours-modal');
-    const operatingHoursClose = document.querySelector('.operating-hours-close');
-
-    hamburgerMenu.addEventListener('click', () => {
-      hamburgerMenu.classList.toggle('active');
-      nav.classList.toggle('active');
-    });
-
-    nav.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-        hamburgerMenu.classList.remove('active');
-        nav.classList.remove('active');
-      });
-    });
-
-    // Sample usage:  (You'd likely fetch this data from a server or local storage)
-    const menuItemsData = [
-      { name: "Hot-Dog Clássico", onSale: true, promotionalPrice: "R$ 4,90" },
-      { name: "Dogão Tradicional", onSale: true, promotionalPrice: "R$ 11,90" },
-      { name: "Dogão de Bovino", onSale: true, promotionalPrice: "R$ 16,90" },
-      { name: "Dogão de Frango", onSale: true, promotionalPrice: "R$ 16,90" },
-      { name: "Batata Suprema", onSale: true, promotionalPrice: "R$ 8,90" },
-    //  { name: "Batata Chips", onSale: false, promotionalPrice: "R$ 8,90" },
-      { name: "Coca Cola Lata", onSale: true, promotionalPrice: "R$ 5,90" },
-    // { name: "Coca Cola Lata Zero", onSale: false, promotionalPrice: "R$ 5,90" },
-      { name: "Guarana Lata", onSale: true, promotionalPrice: "R$ 5,90" },
-     // { name: "Pepsi Lata", onSale: false, promotionalPrice: "R$ 5,90" },
-    ];
-
-    // Function to apply sale prices to items
-    function applySalePrices(itemsData) {
-      const menuGrid = document.querySelector('.menu-grid'); // or drinks-grid as needed
-      const menuItems = menuGrid ? menuGrid.querySelectorAll('.menu-item') : []; // Adjust selector if needed
-
-      const menuGrid1 = document.querySelector('.menu-grid-1'); // or drinks-grid as needed
-      const menuItems1 = menuGrid1 ? menuGrid1.querySelectorAll('.menu-item') : []; // Adjust selector if needed
-
-
-      const drinksGrid = document.querySelector('.drinks-grid');
-      const drinkItems = drinksGrid ? drinksGrid.querySelectorAll('.drink-item') : [];
-
-      const allItems = [...menuItems, ...menuItems1, ...drinkItems];
-
-      allItems.forEach(item => {
-        const itemName = item.querySelector('h3, span').textContent;
-        const itemData = itemsData.find(data => data.name === itemName);
-
-        if (itemData && itemData.onSale) {
-          item.classList.add('on-sale');
-
-          // Create a span for the original price
-          const originalPriceSpan = document.createElement('span');
-          originalPriceSpan.classList.add('original-price');
-          const priceElement = item.querySelector('.price');
-          originalPriceSpan.textContent = priceElement.textContent;
-          item.insertBefore(originalPriceSpan, priceElement); // Inserts before the current price
-
-          // Update the item price with the promotional price
-          item.querySelector('.price').textContent = itemData.promotionalPrice;
-        }
-      });
-    }
-
-    // Call the function to apply sale prices
-    applySalePrices(menuItemsData);
-
-    new OrderManager();
+function updateCartUI() {
+    const cartItems = document.getElementById('cartItems');
+    const cartCount = document.querySelector('.cart-count');
+    const cartTotal = document.getElementById('cartTotal');
     
-    // Show operating hours modal on initial load
-    operatingHoursModal.style.display = 'flex';
+    // Update cart count
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    cartCount.textContent = totalItems;
+    
+    // Update cart total
+    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    cartTotal.textContent = total.toFixed(2).replace('.', ',');
+    
+    // Update cart items display
+    if (cart.length === 0) {
+        cartItems.innerHTML = `
+            <div class="empty-cart">
+                <i class="fas fa-shopping-cart"></i>
+                <p>Seu carrinho está vazio</p>
+            </div>
+        `;
+    } else {
+        cartItems.innerHTML = cart.map(item => `
+            <div class="cart-item">
+                <div class="cart-item-info">
+                    <h4>${item.name}</h4>
+                    <span class="cart-item-price">R$ ${(item.price * item.quantity).toFixed(2).replace('.', ',')}</span>
+                </div>
+                <div class="quantity-controls">
+                    <button class="quantity-btn" onclick="updateQuantity(${item.id}, ${item.quantity - 1})">-</button>
+                    <span>${item.quantity}</span>
+                    <button class="quantity-btn" onclick="updateQuantity(${item.id}, ${item.quantity + 1})">+</button>
+                </div>
+            </div>
+        `).join('');
+    }
+}
 
-    operatingHoursClose.addEventListener('click', () => {
-      operatingHoursModal.style.display = 'none';
+function animateCartIcon() {
+    const cartIcon = document.querySelector('.cart-icon');
+    cartIcon.style.transform = 'scale(1.2)';
+    setTimeout(() => {
+        cartIcon.style.transform = 'scale(1)';
+    }, 200);
+}
+
+// Toggle cart sidebar
+function toggleCart() {
+    const cartSidebar = document.getElementById('cartSidebar');
+    const cartOverlay = document.getElementById('cartOverlay');
+    
+    isCartOpen = !isCartOpen;
+    
+    if (isCartOpen) {
+        cartSidebar.classList.add('open');
+        cartOverlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    } else {
+        cartSidebar.classList.remove('open');
+        cartOverlay.classList.remove('open');
+        document.body.style.overflow = 'auto';
+    }
+}
+
+// Toggle AI modal
+function toggleAI() {
+    const aiModal = document.getElementById('aiModal');
+    const aiOverlay = document.getElementById('aiOverlay');
+    
+    isAIOpen = !isAIOpen;
+    
+    if (isAIOpen) {
+        aiModal.classList.add('open');
+        aiOverlay.classList.add('open');
+        document.body.style.overflow = 'hidden';
+    } else {
+        aiModal.classList.remove('open');
+        aiOverlay.classList.remove('open');
+        document.body.style.overflow = 'auto';
+    }
+}
+
+// Toggle change field visibility
+function toggleChangeField() {
+    const paymentMethod = document.getElementById('paymentMethod').value;
+    const changeSection = document.getElementById('changeSection');
+    
+    if (paymentMethod === 'cash') {
+        changeSection.style.display = 'block';
+    } else {
+        changeSection.style.display = 'none';
+        document.getElementById('changeFor').value = '';
+    }
+}
+
+// Enhanced AI processing system
+function processAIMessage(userMessage) {
+    const message = userMessage.toLowerCase();
+    
+    // Menu requests
+    if (message.includes('menu') || message.includes('cardápio')) {
+        return {
+            text: "📋 **MENU COMPLETO DO BURGER E OTAKUS:**\n\n🍔 **BURGERS SIMPLES:**\n• Burger do Naruto - R$ 16,90\n• Burger do Sasuke - R$ 16,90\n• Burger do Goku - R$ 19,90\n• Burger do Vegeta - R$ 19,90\n\n🍔 **BURGERS DUPLOS:**\n• Burger do Naruto Sábio - R$ 21,90\n• Burger do Sasuke Susanoo - R$ 21,90\n• Burger do Goku SSJ 2 - R$ 26,90\n• Burger do Vegeta Duplo - R$ 26,90\n\n🍟 **ACOMPANHAMENTOS:**\n• Batata Sayajins - R$ 8,90\n• Chips do Poder - R$ 8,90\n\n🥤 **BEBIDAS:**\n• Água C/Gás - R$ 3,90\n• Coca Cola Lata - R$ 5,90\n• Guaraná Lata - R$ 5,90",
+            actions: ['Adicionar Burger', 'Ver Combos', 'Sugestões Populares']
+        };
+    }
+    
+    // Character-specific requests
+    if (message.includes('goku')) {
+        return {
+            text: "⚡ **BURGERS DO GOKU:**\n\n🥇 Burger do Goku - R$ 19,90\n1 carne, mussarela, cebola crisp e molho super\n\n🔥 Burger do Goku SSJ 2 - R$ 26,90\n2 carnes, mussarela, cebola crisp e molho super\n\nO Goku sempre escolhe o mais poderoso! Qual versão você quer?",
+            actions: ['Adicionar Goku Simples', 'Adicionar Goku SSJ 2', 'Sugerir Combo Goku']
+        };
+    }
+    
+    if (message.includes('vegeta')) {
+        return {
+            text: "👑 **BURGERS DO VEGETA:**\n\n🥇 Burger do Vegeta - R$ 19,90\n1 carne, cheddar, cebola crisp e molho fumaça\n\n🔥 Burger do Vegeta Duplo - R$ 26,90\n2 carnes, cheddar, cebola crisp e molho fumaça\n\nO príncipe dos Sayajins merece o melhor! Qual você escolhe?",
+            actions: ['Adicionar Vegeta Simples', 'Adicionar Vegeta Duplo', 'Sugerir Combo Vegeta']
+        };
+    }
+    
+    if (message.includes('naruto')) {
+        return {
+            text: "🍜 **BURGERS DO NARUTO:**\n\n🥇 Burger do Naruto - R$ 16,90\n1 carne, cheddar e molho super\n\n🦊 Burger do Naruto Sábio - R$ 21,90\n2 carnes, cheddar e molho super\n\nDattebayo! Qual versão do ninja você quer?",
+            actions: ['Adicionar Naruto Simples', 'Adicionar Naruto Sábio', 'Sugerir Combo Naruto']
+        };
+    }
+    
+    if (message.includes('sasuke')) {
+        return {
+            text: "⚡ **BURGERS DO SASUKE:**\n\n🥇 Burger do Sasuke - R$ 16,90\n1 carne, mussarela e molho fumaça\n\n👁️ Burger do Sasuke Susanoo - R$ 21,90\n2 carnes, mussarela e molho fumaça\n\nO poder do Sharingan em forma de burger! Qual você prefere?",
+            actions: ['Adicionar Sasuke Simples', 'Adicionar Sasuke Susanoo', 'Sugerir Combo Sasuke']
+        };
+    }
+    
+    // Combo requests
+    if (message.includes('combo') || message.includes('sugest') || message.includes('popular')) {
+        return {
+            text: "🎯 **COMBOS ÉPICOS:**\n\n🥇 **COMBO SAYAJIN** - R$ 41,70\nGoku SSJ 2 + Batata Sayajins + Coca Cola\n\n🥈 **COMBO NINJA** - R$ 36,70\nNaruto Sábio + Chips do Poder + Guaraná\n\n🥉 **COMBO PRÍNCIPE** - R$ 32,70\nVegeta + Batata Sayajins + Água C/Gás\n\nTodos os combos têm desconto especial!",
+            actions: ['Adicionar Combo Sayajin', 'Adicionar Combo Ninja', 'Adicionar Combo Príncipe', 'Montar Combo Personalizado']
+        };
+    }
+    
+    // Cart management
+    if (message.includes('carrinho') || message.includes('pedido')) {
+        if (cart.length === 0) {
+            return {
+                text: "🛒 Seu carrinho está vazio! Vamos adicionar alguns itens deliciosos?",
+                actions: ['Ver Menu', 'Sugestões Populares', 'Combos']
+            };
+        } else {
+            const cartSummary = cart.map(item => `${item.quantity}x ${item.name} - R$ ${(item.price * item.quantity).toFixed(2).replace('.', ',')}`).join('\n');
+            const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+            return {
+                text: `🛒 **SEU PEDIDO ATUAL:**\n\n${cartSummary}\n\n💰 **Total: R$ ${total.toFixed(2).replace('.', ',')}**\n\nO que você gostaria de fazer?`,
+                actions: ['Adicionar Mais Itens', 'Remover Item', 'Finalizar Pedido', 'Limpar Carrinho']
+            };
+        }
+    }
+    
+    // Payment method queries
+    if (message.includes('pagamento') || message.includes('pagar') || message.includes('forma')) {
+        return {
+            text: "💳 **FORMAS DE PAGAMENTO ACEITAS:**\n\n💳 **Pix** - Instantâneo e seguro\n💳 **Cartão** - Débito ou crédito\n💵 **Dinheiro** - Com opção de troco\n\nQual forma você prefere?",
+            actions: ['Pagar com Pix', 'Pagar com Cartão', 'Pagar com Dinheiro', 'Finalizar Pedido']
+        };
+    }
+    
+    // Finalization
+    if (message.includes('finalizar') || message.includes('terminar') || message.includes('whatsapp')) {
+        if (cart.length === 0) {
+            return {
+                text: "❌ Não é possível finalizar um pedido vazio! Adicione alguns itens primeiro.",
+                actions: ['Ver Menu', 'Sugestões Rápidas']
+            };
+        } else {
+            return {
+                text: "🎉 **VAMOS FINALIZAR SEU PEDIDO!**\n\nPara enviar pelo WhatsApp, você precisa:\n1️⃣ Revisar seu pedido\n2️⃣ Preencher nome, telefone e endereço\n3️⃣ Escolher forma de pagamento\n4️⃣ Clicar em 'Enviar pelo WhatsApp'\n\nVou te levar para o carrinho agora!",
+                actions: ['Ir para Carrinho', 'Revisar Pedido', 'Ver Formas de Pagamento']
+            };
+        }
+    }
+    
+    // Help requests
+    if (message.includes('ajuda') || message.includes('help')) {
+        return {
+            text: "🤖 **COMO POSSO AJUDAR:**\n\n✅ Ver menu completo\n✅ Sugerir combos\n✅ Adicionar itens ao carrinho\n✅ Gerenciar seu pedido\n✅ Finalizar pelo WhatsApp\n✅ Explicar qualquer prato\n\nMe diga o que você precisa!",
+            actions: ['Ver Menu', 'Sugerir Combos', 'Ver Meu Pedido']
+        };
+    }
+    
+    // Greetings
+    if (message.match(/(oi|olá|hey|konnichiwa)/)) {
+        return {
+            text: "🐉 Konnichiwa! Bem-vindo ao Burger e Otakus! Sou Shenron e estou aqui para te ajudar a fazer o pedido perfeito! ⚡\n\nO que você gostaria de fazer?",
+            actions: ['Ver Menu', 'Sugestões Populares', 'Montar Combo']
+        };
+    }
+    
+    // Default response
+    return {
+        text: "🤔 Desculpe, não entendi completamente. Posso te ajudar com:\n\n• Ver o menu completo\n• Sugerir combos\n• Adicionar itens ao carrinho\n• Finalizar seu pedido\n\nO que você gostaria de fazer?",
+        actions: ['Ver Menu', 'Sugestões', 'Ver Carrinho', 'Ajuda']
+    };
+}
+
+// Send AI message
+function sendAIMessage() {
+    const input = document.getElementById('aiInput');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Add user message
+    addMessageToChat(message, 'user');
+    input.value = '';
+    
+    // Show typing indicator
+    showTypingIndicator();
+    
+    // Process and respond
+    setTimeout(() => {
+        hideTypingIndicator();
+        const response = processAIMessage(message);
+        addMessageToChat(response.text, 'ai', response.actions);
+    }, 1500);
+}
+
+// Add message to chat
+function addMessageToChat(message, sender, actions = null) {
+    const chat = document.getElementById('aiChat');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = sender === 'user' ? 'user-message' : 'ai-message';
+    
+    let messageHTML = `<p>${message.replace(/\n/g, '<br>')}</p>`;
+    
+    if (actions && actions.length > 0) {
+        messageHTML += `
+            <div class="ai-action-buttons">
+                ${actions.map(action => `
+                    <button class="ai-action-btn" onclick="handleAIAction('${action}')">${action}</button>
+                `).join('')}
+            </div>
+        `;
+    }
+    
+    messageDiv.innerHTML = messageHTML;
+    chat.appendChild(messageDiv);
+    chat.scrollTop = chat.scrollHeight;
+}
+
+// Show/hide typing indicator
+function showTypingIndicator() {
+    const chat = document.getElementById('aiChat');
+    const typingDiv = document.createElement('div');
+    typingDiv.className = 'ai-typing';
+    typingDiv.id = 'typingIndicator';
+    typingDiv.innerHTML = `
+        🤖 Shenron está pensando
+        <div class="typing-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    `;
+    chat.appendChild(typingDiv);
+    chat.scrollTop = chat.scrollHeight;
+}
+
+function hideTypingIndicator() {
+    const indicator = document.getElementById('typingIndicator');
+    if (indicator) indicator.remove();
+}
+
+// Handle AI actions
+function handleAIAction(action) {
+    // Add user action as message
+    addMessageToChat(action, 'user');
+    
+    // Show typing
+    showTypingIndicator();
+    
+    setTimeout(() => {
+        hideTypingIndicator();
+        
+        switch(action) {
+            case 'Ver Menu Completo':
+            case 'Ver Menu':
+                const menuResponse = processAIMessage('menu');
+                addMessageToChat(menuResponse.text, 'ai', menuResponse.actions);
+                break;
+                
+            case 'Sugestões Populares':
+            case 'Sugestões':
+                const popularResponse = processAIMessage('combo');
+                addMessageToChat(popularResponse.text, 'ai', popularResponse.actions);
+                break;
+                
+            case 'Montar Combo':
+            case 'Montar Combo Personalizado':
+                addMessageToChat('🎯 Vamos montar seu combo perfeito!\n\nEscolha uma categoria para começar:', 'ai', ['Burgers Simples', 'Burgers Duplos', 'Acompanhamentos', 'Bebidas']);
+                break;
+                
+            case 'Adicionar Goku Simples':
+                addToCart(1);
+                addMessageToChat('✅ Burger do Goku adicionado! Kamehameha de sabor! ⚡', 'ai', ['Continuar Comprando', 'Finalizar Pedido']);
+                break;
+                
+            case 'Adicionar Goku SSJ 2':
+                addToCart(5);
+                addMessageToChat('✅ Burger do Goku SSJ 2 adicionado! Poder máximo! 🔥', 'ai', ['Continuar Comprando', 'Finalizar Pedido']);
+                break;
+                
+            case 'Adicionar Vegeta Simples':
+                addToCart(2);
+                addMessageToChat('✅ Burger do Vegeta adicionado! Orgulho Sayajin! 👑', 'ai', ['Continuar Comprando', 'Finalizar Pedido']);
+                break;
+                
+            case 'Adicionar Vegeta Duplo':
+                addToCart(6);
+                addMessageToChat('✅ Burger do Vegeta Duplo adicionado! Poder do príncipe! 🔥', 'ai', ['Continuar Comprando', 'Finalizar Pedido']);
+                break;
+                
+            case 'Adicionar Naruto Simples':
+                addToCart(3);
+                addMessageToChat('✅ Burger do Naruto adicionado! Dattebayo! 🍜', 'ai', ['Continuar Comprando', 'Finalizar Pedido']);
+                break;
+                
+            case 'Adicionar Naruto Sábio':
+                addToCart(7);
+                addMessageToChat('✅ Burger do Naruto Sábio adicionado! Modo Sábio ativado! 🦊', 'ai', ['Continuar Comprando', 'Finalizar Pedido']);
+                break;
+                
+            case 'Adicionar Sasuke Simples':
+                addToCart(4);
+                addMessageToChat('✅ Burger do Sasuke adicionado! Sharingan ativado! ⚡', 'ai', ['Continuar Comprando', 'Finalizar Pedido']);
+                break;
+                
+            case 'Adicionar Sasuke Susanoo':
+                addToCart(8);
+                addMessageToChat('✅ Burger do Sasuke Susanoo adicionado! Poder supremo! 👁️', 'ai', ['Continuar Comprando', 'Finalizar Pedido']);
+                break;
+                
+            case 'Adicionar Combo Sayajin':
+                combos.sayajin.forEach(item => addToCart(item.id));
+                addMessageToChat('✅ Combo Sayajin completo adicionado! O mais poderoso! ⚡🍔🍟🥤', 'ai', ['Ver Carrinho', 'Continuar Comprando', 'Finalizar Pedido']);
+                break;
+                
+            case 'Adicionar Combo Ninja':
+                combos.ninja.forEach(item => addToCart(item.id));
+                addMessageToChat('✅ Combo Ninja completo adicionado! Técnica secreta! 🥷🍔🍟🥤', 'ai', ['Ver Carrinho', 'Continuar Comprando', 'Finalizar Pedido']);
+                break;
+                
+            case 'Adicionar Combo Príncipe':
+                combos.principe.forEach(item => addToCart(item.id));
+                addMessageToChat('✅ Combo Príncipe completo adicionado! Digno da realeza! 👑🍔🍟🥤', 'ai', ['Ver Carrinho', 'Continuar Comprando', 'Finalizar Pedido']);
+                break;
+                
+            case 'Ver Carrinho':
+            case 'Ver Meu Pedido':
+            case 'Revisar Pedido':
+                const cartResponse = processAIMessage('carrinho');
+                addMessageToChat(cartResponse.text, 'ai', cartResponse.actions);
+                break;
+                
+            case 'Ir para Carrinho':
+                toggleAI();
+                toggleCart();
+                break;
+                
+            case 'Finalizar Pedido':
+                if (cart.length > 0) {
+                    toggleAI();
+                    toggleCart();
+                    addMessageToChat('🎉 Redirecionado para finalização! Preencha seus dados (nome, telefone e endereço) e envie pelo WhatsApp! 🚀', 'ai');
+                } else {
+                    addMessageToChat('❌ Carrinho vazio! Adicione itens primeiro.', 'ai', ['Ver Menu', 'Sugestões']);
+                }
+                break;
+                
+            case 'Limpar Carrinho':
+                cart = [];
+                updateCartUI();
+                addMessageToChat('🗑️ Carrinho limpo! Vamos começar um novo pedido?', 'ai', ['Ver Menu', 'Sugestões']);
+                break;
+                
+            case 'Remover Item':
+                if (cart.length > 0) {
+                    const itemList = cart.map((item, index) => `${index + 1}. ${item.name} (${item.quantity}x)`).join('\n');
+                    addMessageToChat(`🗑️ **ITENS NO CARRINHO:**\n\n${itemList}\n\nClique no item que deseja remover:`, 'ai', 
+                        cart.map((item, index) => `Remover ${item.name}`)
+                    );
+                } else {
+                    addMessageToChat('❌ Carrinho vazio! Não há itens para remover.', 'ai', ['Ver Menu']);
+                }
+                break;
+                
+            case 'Ver Formas de Pagamento':
+                const paymentResponse = processAIMessage('pagamento');
+                addMessageToChat(paymentResponse.text, 'ai', paymentResponse.actions);
+                break;
+                
+            case 'Pagar com Pix':
+                addMessageToChat('💳 Pix selecionado! Rápido e seguro. No carrinho você pode finalizar seu pedido com esta forma de pagamento.', 'ai', ['Ir para Carrinho', 'Continuar Comprando']);
+                break;
+                
+            case 'Pagar com Cartão':
+                addMessageToChat('💳 Cartão selecionado! Débito ou crédito aceito. No carrinho você pode finalizar seu pedido.', 'ai', ['Ir para Carrinho', 'Continuar Comprando']);
+                break;
+                
+            case 'Pagar com Dinheiro':
+                addMessageToChat('💵 Dinheiro selecionado! Você pode informar o valor para troco no carrinho, se necessário.', 'ai', ['Ir para Carrinho', 'Continuar Comprando']);
+                break;
+                
+            default:
+                // Handle remove specific item
+                if (action.startsWith('Remover ')) {
+                    const itemName = action.replace('Remover ', '');
+                    const itemToRemove = cart.find(item => item.name === itemName);
+                    if (itemToRemove) {
+                        removeFromCart(itemToRemove.id);
+                        addMessageToChat(`✅ ${itemName} removido do carrinho!`, 'ai', ['Ver Carrinho', 'Continuar Comprando']);
+                    }
+                } else {
+                    addMessageToChat('🤔 Ação não reconhecida. Como posso ajudar?', 'ai', ['Ver Menu', 'Ver Carrinho', 'Ajuda']);
+                }
+                break;
+        }
+    }, 1000);
+}
+
+// WhatsApp integration - UPDATED
+function sendToWhatsApp() {
+    const customerName = document.getElementById('customerName').value.trim();
+    const customerPhone = document.getElementById('customerPhone').value.trim();
+    const customerAddress = document.getElementById('customerAddress').value.trim();
+    const paymentMethod = document.getElementById('paymentMethod').value;
+    const changeFor = document.getElementById('changeFor').value;
+    
+    if (!customerName || !customerPhone || !customerAddress || !paymentMethod) {
+        alert('Por favor, preencha todos os campos obrigatórios (nome, telefone, endereço e forma de pagamento).');
+        return;
+    }
+    
+    if (cart.length === 0) {
+        alert('Seu carrinho está vazio!');
+        return;
+    }
+    
+    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    
+    // Payment method display
+    let paymentDisplay = '';
+    switch(paymentMethod) {
+        case 'pix':
+            paymentDisplay = '💳 Pix';
+            break;
+        case 'card':
+            paymentDisplay = '💳 Cartão';
+            break;
+        case 'cash':
+            paymentDisplay = '💵 Dinheiro';
+            if (changeFor && parseFloat(changeFor) > total) {
+                paymentDisplay += ` (Troco para R$ ${parseFloat(changeFor).toFixed(2).replace('.', ',')})`;
+            }
+            break;
+    }
+    
+    let message = `🍔 *PEDIDO - BURGER E OTAKUS* 🍔\n\n`;
+    message += `👤 *Cliente:* ${customerName}\n`;
+    message += `📱 *Telefone:* ${customerPhone}\n`;
+    message += `📍 *Endereço:* ${customerAddress}\n`;
+    message += `💰 *Pagamento:* ${paymentDisplay}\n\n`;
+    message += `📋 *ITENS DO PEDIDO:*\n`;
+    message += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+    
+    cart.forEach(item => {
+        message += `• ${item.name}\n`;
+        message += `  Quantidade: ${item.quantity}x\n`;
+        message += `  Valor: R$ ${(item.price * item.quantity).toFixed(2).replace('.', ',')}\n\n`;
     });
+    
+    message += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+    message += `💰 *TOTAL: R$ ${total.toFixed(2).replace('.', ',')}*\n\n`;
+    
+    if (paymentMethod === 'cash' && changeFor && parseFloat(changeFor) > total) {
+        const change = parseFloat(changeFor) - total;
+        message += `💵 *Troco: R$ ${change.toFixed(2).replace('.', ',')}*\n\n`;
+    }
+    
+    message += `🚚 Aguardando confirmação para entrega!\n`;
+    message += `⚡ Pedido feito via Cardápio Digital`;
+    
+    // Replace with actual WhatsApp number
+    const whatsappNumber = '5571996447078';
+    const whatsappURL = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+    
+    // Clear form and cart after sending
+    cart = [];
+    updateCartUI();
+    document.getElementById('customerName').value = '';
+    document.getElementById('customerPhone').value = '';
+    document.getElementById('customerAddress').value = '';
+    document.getElementById('paymentMethod').value = '';
+    document.getElementById('changeFor').value = '';
+    toggleChangeField();
+    toggleCart();
+    
+    // Show success message
+    alert('Pedido enviado pelo WhatsApp! Obrigado! 🎉');
+    
+    window.open(whatsappURL, '_blank');
+}
 
-    // Close the operating hours modal if the user clicks outside of it
-    window.addEventListener('click', (event) => {
-      if (event.target == operatingHoursModal) {
-        operatingHoursModal.style.display = 'none';
-      }
+// Utility functions
+function findItemById(id) {
+    const allItems = [...menuData.burgers, ...menuData.sides, ...menuData.drinks];
+    return allItems.find(item => item.id === id);
+}
+
+// Enhanced setup function
+function setupEventListeners() {
+    // AI input enter key
+    document.getElementById('aiInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            sendAIMessage();
+        }
     });
+    
+    // Close modals with escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            if (isCartOpen) toggleCart();
+            if (isAIOpen) toggleAI();
+        }
+    });
+    
+    // Prevent body scroll when modals are open
+    document.addEventListener('touchmove', function(e) {
+        if (isCartOpen || isAIOpen) {
+            e.preventDefault();
+        }
+    }, { passive: false });
+}
 
-  } catch (error) {
-    console.error('Falha ao inicializar o sistema de pedidos:', error);
-    alert('Não foi possível carregar o sistema de pedidos. Tente recarregar a página.');
-  }
-
-});
-
+// Initialize cart display
+updateCartUI();
